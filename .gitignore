@@ -9,15 +9,18 @@ dist/
 web-build/
 expo-env.d.ts
 
+android/
+ios/
+web/
+
 # Native
-.kotlin/
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.vscode
+.vscode/
 
 # Metro
 .metro-health-check*
@@ -36,7 +39,3 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-
-# generated native folders
-/ios
-/android

@@ -1,7 +1,7 @@
 import { View, Pressable, Animated } from "react-native";
 import { useRef } from "react";
-import { Text } from "./ThemedText";
-import { IconCheck } from "@tabler/icons-react-native";
+import { Entypo } from "@expo/vector-icons";
+import { Text } from "@/components/ui/text";
 
 type Props = {
     onNumberPress: (num: number) => void;
@@ -44,12 +44,12 @@ const NumberButton = ({
                 style={{ transform: [{ scale }] }}
                 className={`
           rounded-lg items-center justify-center shadow-sm
-          w-10 p-1
-          ${disabled ? "bg-cyan" : "bg-regularblue"}
+          w-11 p-1
+          ${disabled ? "dark:bg-dark-border" : "bg-light-primary dark:bg-dark-primary"}
         `}
             >
                 <Text
-                    className={`font-medium text-3xl ${disabled ? "text-gray-700" : "text-white"
+                    className={`font-medium text-4xl ${disabled ? "dark:text-dark-textPrimary/70" : "text-white"
                         }`}
                 >
                     {number}
@@ -57,13 +57,12 @@ const NumberButton = ({
 
                 {remaining > 0 ? (
                     <Text
-                        className={`font-light text-xs ${disabled ? "text-gray-500" : "text-white/85"
-                            }`}
+                        className={`font-light text-xs text-light-surface dark:text-dark-textSecondary`}
                     >
                         {remaining}
                     </Text>
                 ) : (
-                    <IconCheck color="white" size={13} />
+                    <Entypo name="check" size={16} color="#AAB2C5" />
                 )}
             </Animated.View>
         </Pressable>
@@ -72,7 +71,7 @@ const NumberButton = ({
 
 const NumberRow = ({ onNumberPress, remaining }: Props) => {
     return (
-        <View className="flex-row justify-between px-4 mt-6 w-full">
+        <View className="flex-row justify-between mt-6 w-full">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <NumberButton
                     key={num}
