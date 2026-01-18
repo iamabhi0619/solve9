@@ -43,13 +43,16 @@ const NumberButton = ({
             <Animated.View
                 style={{ transform: [{ scale }] }}
                 className={`
-          rounded-lg items-center justify-center shadow-sm
-          w-11 p-1
-          ${disabled ? "dark:bg-dark-border" : "bg-light-primary dark:bg-dark-primary"}
+          rounded-xl items-center justify-center h-16 w-10
+          ${disabled
+                        ? "bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border"
+                        : "bg-light-primary dark:bg-dark-primary shadow-md"}
         `}
             >
                 <Text
-                    className={`font-medium text-4xl ${disabled ? "dark:text-dark-textPrimary/70" : "text-white"
+                    className={`font-semibold text-3xl ${disabled
+                        ? "text-light-textSecondary dark:text-dark-textSecondary"
+                        : "text-white dark:text-dark-background"
                         }`}
                 >
                     {number}
@@ -57,12 +60,15 @@ const NumberButton = ({
 
                 {remaining > 0 ? (
                     <Text
-                        className={`font-light text-xs text-light-surface dark:text-dark-textSecondary`}
+                        className={`font-semibold text-[10px] mt-0.5 ${disabled
+                            ? "text-light-textSecondary/60 dark:text-dark-textSecondary/60"
+                            : "text-white/80 dark:text-dark-background/80"
+                            }`}
                     >
                         {remaining}
                     </Text>
                 ) : (
-                    <Entypo name="check" size={16} color="#AAB2C5" />
+                    <Entypo name="check" size={14} color={disabled ? "#9CA3AF" : "#10B981"} />
                 )}
             </Animated.View>
         </Pressable>
@@ -71,7 +77,7 @@ const NumberButton = ({
 
 const NumberRow = ({ onNumberPress, remaining }: Props) => {
     return (
-        <View className="flex-row justify-between mt-6 w-full">
+        <View className="flex-row justify-between items-center mt-6 w-full px-1">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <NumberButton
                     key={num}

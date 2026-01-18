@@ -1,5 +1,5 @@
 import { Pressable, Animated, View } from "react-native";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Text } from "@/components/ui/text";
 
 type Props = {
@@ -27,6 +27,33 @@ const SudokuCell = ({
 }: Props) => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const rotateAnim = useRef(new Animated.Value(0)).current;
+    const popAnim = useRef(new Animated.Value(1)).current;
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+    const prevValue = useRef(value);
+
+    // Animate when value changes (for auto-complete)
+    useEffect(() => {
+        if (value !== null && prevValue.current === null && !isFixed) {
+            // Pop and fade in animation for new values
+            popAnim.setValue(0);
+            fadeAnim.setValue(0);
+
+            Animated.parallel([
+                Animated.spring(popAnim, {
+                    toValue: 1,
+                    tension: 100,
+                    friction: 8,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        }
+        prevValue.current = value;
+    }, [value, isFixed]);
 
     const handlePress = () => {
         onPress();
@@ -74,13 +101,20 @@ const SudokuCell = ({
                             `}
             >
                 {value ? (
-                    <Text
-                        className={`font-medium text-4xl
-                            ${isError ? "text-red-600 dark:text-red-400" : isSelected || isSameNumber ? "text-light-background dark:text-dark-background" : isFixed ? "text-light-textPrimary dark:text-dark-textPrimary" : "text-light-primary dark:text-dark-primary"}
-                            `}
+                    <Animated.View
+                        style={{
+                            transform: [{ scale: popAnim }],
+                            opacity: fadeAnim,
+                        }}
                     >
-                        {value}
-                    </Text>
+                        <Text
+                            className={`font-medium text-4xl
+                                ${isError ? "text-red-600 dark:text-red-400" : isSelected || isSameNumber ? "text-light-background dark:text-dark-background" : isFixed ? "text-light-textPrimary dark:text-dark-textPrimary" : "text-light-primary dark:text-dark-primary"}
+                                `}
+                        >
+                            {value}
+                        </Text>
+                    </Animated.View>
                 ) : notes.size > 0 ? (
                     <View className="flex-row flex-wrap w-full h-full p-0.5">
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (

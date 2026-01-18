@@ -4,6 +4,7 @@ import { useMenuStore } from "@/store/menu";
 import { router } from "expo-router";
 import { formateElapsedTime } from "@/utils/formate-time";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useEffect } from "react";
 
 type Props = {
     visible: boolean;
@@ -12,7 +13,13 @@ type Props = {
 };
 
 const GameModal = ({ visible, isWin, onClose }: Props) => {
-    const { timeElapsed, moves, mistakes, startNewGame, level } = useMenuStore();
+    const { timeElapsed, moves, mistakes, startNewGame, level, saveGameToHistory } = useMenuStore();
+
+    useEffect(() => {
+        if (visible) {
+            saveGameToHistory(isWin);
+        }
+    }, [visible, isWin]);
 
     const handleNewGame = () => {
         onClose();
@@ -43,8 +50,8 @@ const GameModal = ({ visible, isWin, onClose }: Props) => {
                             {isWin ? "Congratulations!" : "Game Over"}
                         </Text>
                         <Text className="text-lg text-light-textSecondary dark:text-dark-textSecondary mt-2 text-center">
-                            {isWin 
-                                ? "You completed the puzzle!" 
+                            {isWin
+                                ? "You completed the puzzle!"
                                 : "Too many mistakes. Better luck next time!"}
                         </Text>
                     </View>

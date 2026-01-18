@@ -16,14 +16,15 @@ const Grid = () => {
 
     /* -------------------- STATE -------------------- */
 
-    const [fixedCells] = useState<boolean[][]>(() =>
-        board ? board.map((row) => row.map((cell) => cell !== null)) : Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false))
-    );
-
     const [selected, setSelected] = useState<{
         row: number;
         col: number;
     } | null>(null);
+
+    // Use the fixed cells from the store to determine which cells are editable
+    const isFixedCell = useCallback((row: number, col: number) => {
+        return fixed?.[row]?.[col] !== null;
+    }, [fixed]);
 
     /* -------------------- DERIVED DATA -------------------- */
 
@@ -71,7 +72,7 @@ const Grid = () => {
             Math.floor(c / BOX_SIZE) === Math.floor(selected.col / BOX_SIZE)
         );
     };
-    
+
     const isSameNumber = (r: number, c: number) => {
         if (!selected) return false;
         const selectedValue = board?.[selected.row][selected.col] ?? null;
@@ -86,13 +87,13 @@ const Grid = () => {
     };
 
     const getBorderClass = (r: number, c: number) => `
-    border-[0.2px] border-light-primary dark:border-dark-primary
-    ${c % BOX_SIZE === BOX_SIZE - 1 && c !== GRID_SIZE - 1 ? "border-r" : ""}
-    ${r % BOX_SIZE === BOX_SIZE - 1 && r !== GRID_SIZE - 1 ? "border-b" : ""}
-    ${c === 0 ? "border-l" : ""}
-    ${r === 0 ? "border-t" : ""}
-    ${c === GRID_SIZE - 1 ? "border-r" : ""}
-    ${r === GRID_SIZE - 1 ? "border-b" : ""}
+    border-[0.25px] border-light-primary dark:border-dark-primary
+    ${c % BOX_SIZE === BOX_SIZE - 1 && c !== GRID_SIZE - 1 ? "border-r-2" : ""}
+    ${r % BOX_SIZE === BOX_SIZE - 1 && r !== GRID_SIZE - 1 ? "border-b-2" : ""}
+    ${c === 0 ? "border-l-2" : ""}
+    ${r === 0 ? "border-t-2" : ""}
+    ${c === GRID_SIZE - 1 ? "border-r-2" : ""}
+    ${r === GRID_SIZE - 1 ? "border-b-2" : ""}
   `;
 
     /* -------------------- RENDER -------------------- */
@@ -117,7 +118,7 @@ const Grid = () => {
                                     isSameBox(rowIndex, colIndex)
                                 }
                                 isSameNumber={isSameNumber(rowIndex, colIndex)}
-                                isFixed={fixedCells[rowIndex][colIndex]}
+                                isFixed={isFixedCell(rowIndex, colIndex)}
                                 isError={isError(rowIndex, colIndex)}
                                 notes={notes?.[rowIndex][colIndex] || new Set()}
                                 onPress={() => handleCellSelect(rowIndex, colIndex)}

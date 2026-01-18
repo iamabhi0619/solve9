@@ -3,6 +3,7 @@ import { generateFullBoard } from "@/sudoku/generate-full-board";
 import { Board } from "@/sudoku/types";
 import { create } from "zustand";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Move = {
   row: number;
@@ -10,6 +11,30 @@ type Move = {
   oldValue: number | null;
   newValue: number | null;
   isNote?: boolean;
+};
+
+type GameHistory = {
+  id: string;
+  level: "easy" | "medium" | "hard" | "expert";
+  timeElapsed: number;
+  moves: number;
+  mistakes: number;
+  completedAt: Date;
+  isWin: boolean;
+};
+
+type UnsolvedGame = {
+  id: string;
+  grid: Board;
+  solvedGrid: Board;
+  fixed: Board;
+  notes: Set<number>[][];
+  level: "easy" | "medium" | "hard" | "expert";
+  moves: number;
+  mistakes: number;
+  timeElapsed: number;
+  history: Move[];
+  savedAt: Date;
 };
 
 type GameStore = {
@@ -35,6 +60,9 @@ type GameStore = {
   isGameOver: boolean;
   isGameWon: boolean;
   isPencilMode: boolean;
+  currentGameId: string | null;
+  gameHistory: GameHistory[];
+  unsolvedGames: UnsolvedGame[];
   startNewGame: () => void;
   handleInput: (row: number, col: number, value: number | null) => void;
   undo: () => void;
@@ -45,6 +73,14 @@ type GameStore = {
   incrementTime: () => void;
   checkWin: () => boolean;
   resetGame: () => void;
+  saveGameToHistory: (isWin: boolean) => void;
+  saveUnsolvedGame: () => void;
+  loadUnsolvedGame: (gameId: string) => void;
+  deleteUnsolvedGame: (gameId: string) => void;
+  loadHistoryAndUnsolved: () => Promise<void>;
+  clearHistory: () => void;
+  canAutoComplete: () => boolean;
+  autoComplete: () => Promise<void>;
 };
 
 export const useMenuStore = create<GameStore>((set, get) => ({
@@ -63,6 +99,9 @@ export const useMenuStore = create<GameStore>((set, get) => ({
   isGameOver: false,
   isGameWon: false,
   isPencilMode: false,
+  currentGameId: null,
+  gameHistory: [],
+  unsolvedGames: [],
 
   startNewGame: () => {
     const currentLevel = get().level;
@@ -72,8 +111,9 @@ export const useMenuStore = create<GameStore>((set, get) => ({
     const fullBoard = generateFullBoard();
     const puzzleBoard = createPuzzle(fullBoard, currentLevel);
     const notes = Array.from({ length: 9 }, () =>
-      Array.from({ length: 9 }, () => new Set<number>())
+      Array.from({ length: 9 }, () => new Set<number>()),
     );
+    const gameId = Date.now().toString();
     set({
       board: puzzleBoard,
       solution: fullBoard,
@@ -88,6 +128,7 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       isGameWon: false,
       isPencilMode: false,
       oldGame: null,
+      currentGameId: gameId,
     });
     router.push("/board");
   },
@@ -245,4 +286,254 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       isPaused: false,
     });
   },
+
+  saveGameToHistory: async (isWin: boolean) => {
+    const { currentGameId, level, timeElapsed, moves, mistakes, gameHistory } = get();
+    if (!currentGameId || !level) return;
+
+    const historyEntry: GameHistory = {
+      id: currentGameId,
+      level,
+      timeElapsed,
+      moves,
+      mistakes,
+      completedAt: new Date(),
+      isWin,
+    };
+
+    const newHistory = [historyEntry, ...gameHistory].slice(0, 50); // Keep last 50 games
+    set({ gameHistory: newHistory });
+
+    // Delete from unsolved games if it exists
+    get().deleteUnsolvedGame(currentGameId);
+
+    // Save to AsyncStorage
+    try {
+      await AsyncStorage.setItem("gameHistory", JSON.stringify(newHistory));
+    } catch (error) {
+      console.error("Failed to save game history:", error);
+    }
+  },
+
+  saveUnsolvedGame: async () => {
+    const {
+      currentGameId,
+      board,
+      solution,
+      fixed,
+      notes,
+      level,
+      moves,
+      mistakes,
+      timeElapsed,
+      history,
+      unsolvedGames,
+    } = get();
+
+    if (!currentGameId || !board || !solution || !fixed || !notes || !level) return;
+
+    // Convert Sets to arrays for JSON serialization
+    const notesArray = notes.map((row) => row.map((cell) => Array.from(cell)));
+
+    const unsolvedGame: UnsolvedGame = {
+      id: currentGameId,
+      grid: board,
+      solvedGrid: solution,
+      fixed,
+      notes: notesArray as any,
+      level,
+      moves,
+      mistakes,
+      timeElapsed,
+      history,
+      savedAt: new Date(),
+    };
+
+    // Remove existing entry if present and add new one
+    const filteredGames = unsolvedGames.filter((g) => g.id !== currentGameId);
+    const newUnsolved = [unsolvedGame, ...filteredGames].slice(0, 10); // Keep last 10 unsolved
+    set({ unsolvedGames: newUnsolved });
+
+    // Save to AsyncStorage
+    try {
+      await AsyncStorage.setItem("unsolvedGames", JSON.stringify(newUnsolved));
+    } catch (error) {
+      console.error("Failed to save unsolved game:", error);
+    }
+  },
+
+  loadUnsolvedGame: (gameId: string) => {
+    const { unsolvedGames } = get();
+    const game = unsolvedGames.find((g) => g.id === gameId);
+
+    if (!game) return;
+
+    // Reconstruct Sets from arrays
+    const reconstructedNotes = game.notes.map((row) =>
+      row.map((cell) => new Set(Array.isArray(cell) ? cell : [])),
+    );
+
+    set({
+      board: game.grid,
+      solution: game.solvedGrid,
+      fixed: game.fixed,
+      notes: reconstructedNotes,
+      level: game.level,
+      moves: game.moves,
+      mistakes: game.mistakes,
+      timeElapsed: game.timeElapsed,
+      history: game.history,
+      currentGameId: game.id,
+      isPaused: false,
+      isGameOver: false,
+      isGameWon: false,
+      isPencilMode: false,
+      oldGame: null,
+    });
+
+    router.push("/board");
+  },
+
+  deleteUnsolvedGame: async (gameId: string) => {
+    const { unsolvedGames } = get();
+    const newUnsolved = unsolvedGames.filter((g) => g.id !== gameId);
+    set({ unsolvedGames: newUnsolved });
+
+    try {
+      await AsyncStorage.setItem("unsolvedGames", JSON.stringify(newUnsolved));
+    } catch (error) {
+      console.error("Failed to delete unsolved game:", error);
+    }
+  },
+
+  loadHistoryAndUnsolved: async () => {
+    try {
+      const [historyData, unsolvedData] = await Promise.all([
+        AsyncStorage.getItem("gameHistory"),
+        AsyncStorage.getItem("unsolvedGames"),
+      ]);
+
+      if (historyData) {
+        const history = JSON.parse(historyData);
+        set({ gameHistory: history });
+      }
+
+      if (unsolvedData) {
+        const unsolved = JSON.parse(unsolvedData);
+        // Reconstruct Sets from loaded data
+        const reconstructed = unsolved.map((game: any) => ({
+          ...game,
+          notes: game.notes.map((row: any[]) =>
+            row.map((cell: any[]) => new Set(Array.isArray(cell) ? cell : [])),
+          ),
+        }));
+        set({ unsolvedGames: reconstructed });
+      }
+    } catch (error) {
+      console.error("Failed to load history and unsolved games:", error);
+    }
+  },
+
+  clearHistory: async () => {
+    set({ gameHistory: [] });
+    try {
+      await AsyncStorage.removeItem("gameHistory");
+    } catch (error) {
+      console.error("Failed to clear history:", error);
+    }
+  },
+
+  canAutoComplete: () => {
+    const { board, solution, mistakes } = get();
+    if (!board || !solution || mistakes > 0) return false;
+
+    // Check if there are any mistakes on the board
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const cellValue = board[r][c];
+        const correctValue = solution[r][c];
+        if (cellValue !== null && cellValue !== correctValue) {
+          return false; // Has mistakes, can't auto-complete
+        }
+      }
+    }
+
+    // Check if all empty cells have exactly one valid option
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (board[r][c] === null) {
+          const validNumbers = getValidNumbers(board, r, c);
+          if (validNumbers.length !== 1) {
+            return false; // Cell has 0 or multiple options
+          }
+        }
+      }
+    }
+
+    // Check if there's at least one empty cell
+    const hasEmptyCells = board.some((row) => row.some((cell) => cell === null));
+    return hasEmptyCells;
+  },
+
+  autoComplete: async () => {
+    const { board, solution, handleInput } = get();
+    if (!board || !solution) return;
+
+    // Collect all empty cells
+    const emptyCells: { row: number; col: number; value: number }[] = [];
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (board[r][c] === null && solution[r][c] !== null) {
+          emptyCells.push({ row: r, col: c, value: solution[r][c]! });
+        }
+      }
+    }
+
+    // Fill cells one by one with animation delay
+    for (const cell of emptyCells) {
+      await new Promise((resolve) => setTimeout(resolve, 150)); // 150ms delay between fills
+      handleInput(cell.row, cell.col, cell.value);
+    }
+  },
 }));
+
+// Helper function to get valid numbers for a cell
+function getValidNumbers(board: (number | null)[][], row: number, col: number): number[] {
+  const valid: number[] = [];
+
+  for (let num = 1; num <= 9; num++) {
+    if (isValidPlacement(board, row, col, num)) {
+      valid.push(num);
+    }
+  }
+
+  return valid;
+}
+
+function isValidPlacement(
+  board: (number | null)[][],
+  row: number,
+  col: number,
+  num: number,
+): boolean {
+  // Check row
+  for (let c = 0; c < 9; c++) {
+    if (board[row][c] === num) return false;
+  }
+
+  // Check column
+  for (let r = 0; r < 9; r++) {
+    if (board[r][col] === num) return false;
+  }
+
+  // Check 3x3 box
+  const boxRow = Math.floor(row / 3) * 3;
+  const boxCol = Math.floor(col / 3) * 3;
+  for (let r = boxRow; r < boxRow + 3; r++) {
+    for (let c = boxCol; c < boxCol + 3; c++) {
+      if (board[r][c] === num) return false;
+    }
+  }
+
+  return true;
+}

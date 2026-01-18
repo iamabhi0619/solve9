@@ -1,14 +1,21 @@
 import LevelSelector from "@/components/level-slector";
 import PlayButtons from "@/components/playbuttons";
+import UnsolvedGames from "@/components/unsolved-games";
 import { Text } from "@/components/ui/text";
 import { useMenuStore } from "@/store/menu";
-import { Image, useColorScheme, View } from "react-native";
+import { Image, useColorScheme, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useEffect } from "react";
 
 export default function IndexScreen() {
   const colorScheme = useColorScheme();
-  const { level, setLevel } = useMenuStore();
+  const { loadHistoryAndUnsolved } = useMenuStore();
+
+  useEffect(() => {
+    loadHistoryAndUnsolved();
+  }, []);
 
   return (
     <SafeAreaView
@@ -16,6 +23,18 @@ export default function IndexScreen() {
       className="bg-light-background dark:bg-dark-background"
     >
       <View className="flex-1 items-center justify-center px-6 w-full">
+        <View className="absolute top-4 right-6">
+          <Pressable
+            onPress={() => router.push("/history")}
+            className="p-3 bg-light-surface dark:bg-dark-surface rounded-full border border-light-border dark:border-dark-border"
+          >
+            <FontAwesome5
+              name="history"
+              size={24}
+              color={colorScheme === "dark" ? "#E6EAF2" : "#0F2854"}
+            />
+          </Pressable>
+        </View>
         <View className="flex-col items-center w-full mb-8">
           <View className="mb-6 shadow-lg">
             <Image
@@ -39,6 +58,7 @@ export default function IndexScreen() {
             </Text>
           </View>
         </View>
+        <UnsolvedGames />
         <LevelSelector />
         <PlayButtons />
       </View>
