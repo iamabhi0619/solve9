@@ -119,7 +119,7 @@ export default function HistoryScreen() {
                         <FontAwesome5
                             name="history"
                             size={64}
-                            className="text-light-textSecondary dark:text-dark-textSecondary mb-4"
+                            color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
                         />
                         <Text className="text-xl text-light-textSecondary dark:text-dark-textSecondary">
                             No game history yet

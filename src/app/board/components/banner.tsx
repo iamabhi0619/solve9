@@ -25,7 +25,7 @@ function Banner({ }: Props) {
                     <FontAwesome5
                         name="arrow-left"
                         size={24}
-                        className="text-light-textPrimary dark:text-dark-textPrimary"
+                        color={colorScheme === "dark" ? "#E6EAF2" : "#0F2854"}
                     />
                 </Pressable>
                 <View className="flex-row items-center">
