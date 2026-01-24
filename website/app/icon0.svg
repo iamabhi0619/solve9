@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024"><svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_2_1186)">
+<rect x="89" y="87" width="250" height="250" rx="50" fill="#0F2854"></rect>
+<rect x="89" y="387" width="250" height="250" rx="50" fill="#1C4D8D"></rect>
+<rect x="89" y="687" width="250" height="250" rx="50" fill="#4988C4"></rect>
+<rect x="387" y="87" width="250" height="250" rx="50" fill="#1C4D8D"></rect>
+<rect x="387" y="387" width="250" height="250" rx="50" fill="#4988C4"></rect>
+<rect x="387" y="687" width="250" height="250" rx="50" fill="#1C4D8D"></rect>
+<rect x="685" y="87" width="250" height="250" rx="50" fill="#4988C4"></rect>
+<line x1="720.438" y1="899.444" x2="900.424" y2="901.713" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+<line x1="720" y1="421" x2="900" y2="421" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+<line x1="720.45" y1="602.455" x2="900.435" y2="604.783" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+<line x1="900.128" y1="421.871" x2="901.882" y2="898.872" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+<line x1="720" y1="899" x2="720" y2="794" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+<line x1="720" y1="422" x2="720" y2="602" stroke="#0F2854" stroke-width="70" stroke-linecap="round"></line>
+</g>
+<defs>
+<filter id="filter0_d_2_1186" x="-4" y="0" width="1032" height="1032" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
+<feOffset dy="4"></feOffset>
+<feGaussianBlur stdDeviation="2"></feGaussianBlur>
+<feComposite in2="hardAlpha" operator="out"></feComposite>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"></feColorMatrix>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2_1186"></feBlend>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2_1186" result="shape"></feBlend>
+</filter>
+</defs>
+</svg></svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

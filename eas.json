@@ -13,17 +13,10 @@
     },
     "production": {
       "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
-      }
-    },
-    "apk-arm64": {
-      "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "app-bundle"
       },
-      "env": {
-        "EXPO_PUBLIC_ABI_FILTERS": "arm64-v8a"
+      "ios": {
+        "simulator": false
       }
     }
   },
