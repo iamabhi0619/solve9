@@ -15,13 +15,13 @@ function UnsolvedGames() {
         <View className="w-full mb-4">
             <View className="flex-row items-center justify-between mb-2 px-1">
                 <View className="flex-row items-center">
-                    <View className="w-1 h-5 bg-light-primary dark:bg-dark-primary rounded-full mr-2" />
-                    <Text className="text-base font-bold text-light-textPrimary dark:text-dark-textPrimary">
+                    <View className="w-1 h-5 bg-primary rounded-full mr-2" />
+                    <Text className="text-base font-bold text-foreground">
                         Continue Playing
                     </Text>
                 </View>
-                <View className="bg-light-primary/10 dark:bg-dark-primary/10 px-2 py-0.5 rounded-full">
-                    <Text className="text-[10px] font-semibold text-light-primary dark:text-dark-primary">
+                <View className="bg-primary/10 px-2 py-0.5 rounded-full">
+                    <Text className="text-[10px] font-semibold text-foreground">
                         {unsolvedGames.length}
                     </Text>
                 </View>
@@ -43,12 +43,12 @@ function UnsolvedGames() {
                         <Pressable
                             key={game.id}
                             onPress={() => loadUnsolvedGame(game.id)}
-                            className="bg-light-surface dark:bg-dark-surface border border-light-primary/30 dark:border-dark-primary/30 rounded-2xl p-3 mr-3 w-44"
+                            className="bg-surface border border-primary/30 rounded-2xl p-3 mr-3 w-44"
                            
                         >
                             <View className="flex-row justify-between items-center mb-2">
-                                <View className="bg-light-primary dark:bg-dark-primary rounded-lg px-2.5 py-1">
-                                    <Text className="text-xs font-bold capitalize text-white dark:text-dark-background">
+                                <View className="bg-primary rounded-lg px-2.5 py-1">
+                                    <Text className="text-xs font-bold capitalize text-background">
                                         {game.level}
                                     </Text>
                                 </View>
@@ -66,7 +66,7 @@ function UnsolvedGames() {
                             <View className="mb-2">
                                 <View className="flex-row items-center mb-2">
                                     <FontAwesome5 name="clock" size={11} color="#6B7280" />
-                                    <Text className="ml-1.5 text-sm font-bold text-light-textPrimary dark:text-dark-textPrimary">
+                                    <Text className="ml-1.5 text-sm font-bold text-foreground">
                                         {formateElapsedTime(game.timeElapsed)}
                                     </Text>
                                 </View>
@@ -74,7 +74,7 @@ function UnsolvedGames() {
                                 <View className="flex-row justify-between">
                                     <View className="flex-row items-center">
                                         <FontAwesome5 name="walking" size={9} color="#6B7280" />
-                                        <Text className="ml-1 text-xs text-light-textSecondary dark:text-dark-textSecondary">
+                                        <Text className="ml-1 text-xs text-muted">
                                             {game.moves}
                                         </Text>
                                     </View>
@@ -87,8 +87,8 @@ function UnsolvedGames() {
                                 </View>
                             </View>
 
-                            <View className="border-t border-light-border dark:border-dark-border pt-2">
-                                <Text className="text-[9px] text-light-textSecondary dark:text-dark-textSecondary">
+                            <View className="border-t border-border pt-2">
+                                <Text className="text-[9px] text-muted">
                                     {formattedDate}
                                 </Text>
                             </View>

@@ -1,4 +1,4 @@
-import { Pressable, Animated, View } from "react-native";
+import { Pressable, Animated, View, StyleSheet, Platform } from "react-native";
 import { useRef, useEffect } from "react";
 import { Text } from "@/components/ui/text";
 
@@ -8,11 +8,14 @@ type Props = {
     isRelated: boolean;
     isSameNumber: boolean;
     isFixed: boolean;
+    isLocked: boolean;
     isError: boolean;
     notes: Set<number>;
     onPress: () => void;
-    borderClass: string;
+    cellSize: number;
 };
+
+const NOTE_NUMS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const SudokuCell = ({
     value,
@@ -21,33 +24,30 @@ const SudokuCell = ({
     isSameNumber,
     onPress,
     isFixed,
+    isLocked,
     isError,
     notes,
-    borderClass,
+    cellSize,
 }: Props) => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
-    const rotateAnim = useRef(new Animated.Value(0)).current;
     const popAnim = useRef(new Animated.Value(1)).current;
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const prevValue = useRef(value);
 
-    // Animate when value changes (for auto-complete)
     useEffect(() => {
         if (value !== null && prevValue.current === null && !isFixed) {
-            // Pop and fade in animation for new values
-            popAnim.setValue(0);
+            popAnim.setValue(0.6);
             fadeAnim.setValue(0);
-
             Animated.parallel([
                 Animated.spring(popAnim, {
                     toValue: 1,
-                    tension: 100,
-                    friction: 8,
+                    tension: 120,
+                    friction: 7,
                     useNativeDriver: true,
                 }),
                 Animated.timing(fadeAnim, {
                     toValue: 1,
-                    duration: 300,
+                    duration: 200,
                     useNativeDriver: true,
                 }),
             ]).start();
@@ -57,79 +57,108 @@ const SudokuCell = ({
 
     const handlePress = () => {
         onPress();
-        Animated.parallel([
-            Animated.sequence([
-                Animated.timing(scaleAnim, {
-                    toValue: 0.95,
-                    duration: 70,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(scaleAnim, {
-                    toValue: 1,
-                    tension: 70,
-                    friction: 7,
-                    useNativeDriver: true,
-                }),
-            ]),
-            Animated.sequence([
-                Animated.timing(rotateAnim, {
-                    toValue: 1,
-                    duration: 70,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(rotateAnim, {
-                    toValue: 0,
-                    tension: 60,
-                    friction: 8,
-                    useNativeDriver: true,
-                }),
-            ]),
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 0.88,
+                duration: 60,
+                useNativeDriver: true,
+            }),
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                tension: 180,
+                friction: 8,
+                useNativeDriver: true,
+            }),
         ]).start();
     };
 
+    const noteSize = cellSize / 3;
+    const noteFontSize = Math.max(7, noteSize * 0.55);
+    const valueFontSize = cellSize * 0.52;
+
     return (
         <Animated.View
-            style={{
-                transform: [{ scale: scaleAnim }],
-            }}
+            style={[
+                styles.cellWrapper,
+                { width: cellSize, height: cellSize },
+                { transform: [{ scale: scaleAnim }] },
+            ]}
         >
             <Pressable
                 onPress={handlePress}
-                className={`w-[44px] h-[44px] items-center justify-center
-                            ${isError ? "bg-red-100 dark:bg-red-900/30" : isSelected ? "bg-light-primarySoft dark:bg-dark-primarySoft" : isSameNumber ? "bg-light-primarySoft/90 dark:bg-dark-primarySoft/90" : isRelated ? "bg-light-primarySoft/10 dark:bg-dark-primarySoft/10" : "bg-light-surface dark:bg-dark-surface"}
-                            ${borderClass}
-                            `}
+                className={[
+                    isError
+                        ? "bg-error-bg"
+                        : isSelected
+                            ? "bg-cell-selected"
+                            : isSameNumber
+                                ? "bg-cell-same"
+                                : isRelated
+                                    ? "bg-cell-related"
+                                    : "bg-transparent",
+                ].join(" ")}
+                style={[styles.cell, { width: cellSize, height: cellSize }]}
             >
                 {value ? (
                     <Animated.View
                         style={{
                             transform: [{ scale: popAnim }],
                             opacity: fadeAnim,
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
                     >
                         <Text
-                            className={`font-medium text-4xl
-                                ${isError ? "text-red-600 dark:text-red-400" : isSelected || isSameNumber ? "text-light-background dark:text-dark-background" : isFixed ? "text-light-textPrimary dark:text-dark-textPrimary" : "text-light-primary dark:text-dark-primary"}
-                                `}
+                            className={
+                                `${isError
+                                    ? "text-error"
+                                    : isSelected
+                                        ? "text-foreground"
+                                        : isSameNumber
+                                            ? "text-foreground"
+                                            : isFixed
+                                                ? "text-foreground"
+                                                : "text-primary"} text-3xl font-semibold`}
                         >
                             {value}
                         </Text>
                     </Animated.View>
                 ) : notes.size > 0 ? (
-                    <View className="flex-row flex-wrap w-full h-full p-0.5">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                            <Text
+                    <View style={[styles.notesGrid, { width: cellSize - 2, height: cellSize - 2 }]}>
+                        {NOTE_NUMS.map((num) => (
+                            <View
                                 key={num}
-                                className="w-1/3 h-1/3 text-[10px] text-center text-light-textSecondary dark:text-dark-textSecondary"
+                                style={{ width: noteSize, height: noteSize, alignItems: "center", justifyContent: "center" }}
                             >
-                                {notes.has(num) ? num : ''}
-                            </Text>
+                                {notes.has(num) ? (
+                                    <Text
+                                        className="text-note text-center"
+                                        style={{ fontSize: noteFontSize, lineHeight: noteFontSize * 1.3 }}
+                                    >
+                                        {num}
+                                    </Text>
+                                ) : null}
+                            </View>
                         ))}
                     </View>
                 ) : null}
             </Pressable>
-        </Animated.View>
+        </Animated.View >
     );
 };
+
+const styles = StyleSheet.create({
+    cellWrapper: {
+        // no overflow so scale animation isn't clipped
+    },
+    cell: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    notesGrid: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+    },
+});
 
 export default SudokuCell;

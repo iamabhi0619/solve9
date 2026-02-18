@@ -10,16 +10,16 @@ function PlayButtons() {
       {oldGame && (
         <Pressable
           onPress={() => {}}
-          className="w-full items-center bg-light-primary/10 dark:bg-dark-primary/10 py-3 rounded-xl border border-light-border dark:border-dark-border"
+          className="w-full items-center bg-primary/10 py-3 rounded-xl border border-border"
         >
-          <Text className="text-xl font-bold text-light-textPrimary dark:text-dark-textPrimary">
+          <Text className="text-xl font-bold text-foreground">
             Continue
           </Text>
           <View className="flex-row">
-            <Text className="text-light-textSecondary dark:text-dark-textSecondary">
+            <Text className="text-muted">
               {formateElapsedTime(oldGame.timeElapsed)}
             </Text>
-            <Text className="capitalize ml-2 text-light-textSecondary dark:text-dark-textSecondary">
+            <Text className="capitalize ml-2 text-muted">
               {oldGame.level}
             </Text>
           </View>
@@ -27,9 +27,9 @@ function PlayButtons() {
       )}
       <Pressable
         onPress={startNewGame}
-        className="w-full items-center bg-light-primary dark:bg-dark-primary py-3 rounded-xl mt-4"
+        className="w-full items-center bg-primary py-3 rounded-xl mt-4"
       >
-        <Text className="text-light-background dark:text-dark-textPrimary text-xl font-bold">
+        <Text className="text-background text-xl font-bold">
           New Game
         </Text>
       </Pressable>

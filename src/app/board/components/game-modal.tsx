@@ -39,53 +39,53 @@ const GameModal = ({ visible, isWin, onClose }: Props) => {
             onRequestClose={onClose}
         >
             <View className="flex-1 bg-black/50 justify-center items-center px-6">
-                <View className="bg-light-background dark:bg-dark-background rounded-2xl p-6 w-full max-w-md shadow-xl">
+                <View className="bg-background rounded-2xl p-6 w-full max-w-md shadow-xl">
                     <View className="items-center mb-6">
                         {isWin ? (
                             <FontAwesome5 name="trophy" size={64} color="#10B981" />
                         ) : (
                             <FontAwesome5 name="times-circle" size={64} color="#EF4444" />
                         )}
-                        <Text className="text-3xl font-bold mt-4 text-light-textPrimary dark:text-dark-textPrimary">
+                        <Text className="text-3xl font-bold mt-4 text-foreground">
                             {isWin ? "Congratulations!" : "Game Over"}
                         </Text>
-                        <Text className="text-lg text-light-textSecondary dark:text-dark-textSecondary mt-2 text-center">
+                        <Text className="text-lg text-muted mt-2 text-center">
                             {isWin
                                 ? "You completed the puzzle!"
                                 : "Too many mistakes. Better luck next time!"}
                         </Text>
                     </View>
 
-                    <View className="bg-light-surface dark:bg-dark-surface rounded-xl p-4 mb-6">
+                    <View className="bg-surface rounded-xl p-4 mb-6">
                         <View className="flex-row justify-between mb-3">
-                            <Text className="text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-muted">
                                 Difficulty
                             </Text>
-                            <Text className="text-light-textPrimary dark:text-dark-textPrimary font-semibold capitalize">
+                            <Text className="text-foreground font-semibold capitalize">
                                 {level}
                             </Text>
                         </View>
                         <View className="flex-row justify-between mb-3">
-                            <Text className="text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-muted">
                                 Time
                             </Text>
-                            <Text className="text-light-textPrimary dark:text-dark-textPrimary font-semibold">
+                            <Text className="text-foreground font-semibold">
                                 {formateElapsedTime(timeElapsed)}
                             </Text>
                         </View>
                         <View className="flex-row justify-between mb-3">
-                            <Text className="text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-muted">
                                 Moves
                             </Text>
-                            <Text className="text-light-textPrimary dark:text-dark-textPrimary font-semibold">
+                            <Text className="text-foreground font-semibold">
                                 {moves}
                             </Text>
                         </View>
                         <View className="flex-row justify-between">
-                            <Text className="text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-muted">
                                 Mistakes
                             </Text>
-                            <Text className="text-light-textPrimary dark:text-dark-textPrimary font-semibold">
+                            <Text className="text-foreground font-semibold">
                                 {mistakes}/3
                             </Text>
                         </View>
@@ -94,17 +94,17 @@ const GameModal = ({ visible, isWin, onClose }: Props) => {
                     <View className="gap-3">
                         <Pressable
                             onPress={handleNewGame}
-                            className="bg-light-primary dark:bg-dark-primary py-4 rounded-xl items-center active:opacity-80"
+                            className="bg-primary py-4 rounded-xl items-center active:opacity-80"
                         >
-                            <Text className="text-white dark:text-dark-textPrimary text-lg font-bold">
+                            <Text className="text-background text-lg font-bold">
                                 New Game
                             </Text>
                         </Pressable>
                         <Pressable
                             onPress={handleBackToMenu}
-                            className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border py-4 rounded-xl items-center active:opacity-80"
+                            className="bg-surface border border-border py-4 rounded-xl items-center active:opacity-80"
                         >
-                            <Text className="text-light-textPrimary dark:text-dark-textPrimary text-lg font-bold">
+                            <Text className="text-foreground text-lg font-bold">
                                 Back to Menu
                             </Text>
                         </Pressable>

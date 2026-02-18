@@ -1,14 +1,17 @@
 import { Text } from "@/components/ui/text"
-import { Image, View, useColorScheme, Pressable } from "react-native"
+import { Image, View, Pressable } from "react-native"
 import { router } from "expo-router"
 import { useMenuStore } from "@/store/menu"
+import { useTheme } from "@/theme"
 import { FontAwesome5 } from "@expo/vector-icons"
 
 type Props = {}
 
 function Banner({ }: Props) {
-    const colorScheme = useColorScheme();
     const { saveUnsolvedGame, isGameOver, isGameWon } = useMenuStore();
+    const { resolvedMode } = useTheme();
+
+    const iconColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
 
     const handleBack = async () => {
         // Only save if game is not over or won
@@ -25,19 +28,19 @@ function Banner({ }: Props) {
                     <FontAwesome5
                         name="arrow-left"
                         size={24}
-                        color={colorScheme === "dark" ? "#E6EAF2" : "#0F2854"}
+                        color={iconColor}
                     />
                 </Pressable>
                 <View className="flex-row items-center">
                     <Image
                         source={
-                            colorScheme === "dark"
-                                ? require('@/assets/icon-dark.png')
-                                : require('@/assets/icon.png')
+                            resolvedMode === "light"
+                                ? require('../../../assets/icon.png')
+                                : require('../../../assets/icon-dark.png')
                         }
                         style={{ width: 50, height: 50 }}
                     />
-                    <Text className="text-4xl ml-2 font-bold text-light-textPrimary dark:text-dark-textPrimary">Solve9</Text>
+                    <Text className="text-4xl ml-2 font-bold text-foreground">Solve9</Text>
                 </View>
                 <View style={{ width: 40 }} />
             </View>

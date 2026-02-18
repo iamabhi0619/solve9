@@ -3,20 +3,23 @@ import { Pressable, View } from 'react-native'
 import { FontAwesome5, Fontisto } from '@expo/vector-icons'
 import { Text } from '@/components/ui/text'
 import { useMenuStore } from '@/store/menu'
-import { useColorScheme } from 'react-native'
+import { useTheme } from '@/theme'
 
 type Props = {
     onErase: () => void;
+    selected: { row: number; col: number } | null;
 }
 
-function Toolbar({ onErase }: Props) {
-    const { undo, togglePencilMode, getHint, isPencilMode, history, canAutoComplete, autoComplete } = useMenuStore();
-    const colorScheme = useColorScheme();
+function Toolbar({ onErase, selected }: Props) {
+    const { undo, togglePencilMode, getHint, isPencilMode, history, canAutoComplete, autoComplete, hintsRemaining } = useMenuStore();
+    const { resolvedMode } = useTheme();
     const [isAutoCompleting, setIsAutoCompleting] = React.useState(false);
 
-    const primaryColor = colorScheme === "dark" ? "#E6EAF2" : "#0F2854";
-    const secondaryColor = colorScheme === "dark" ? "#5B8CFF" : "#1C4D8D";
-    const disabledColor = colorScheme === "dark" ? "#AAB2C5" : "#94A3B8";
+    const hintsLeft = hintsRemaining();
+
+    const primaryColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
+    const secondaryColor = resolvedMode === "light" ? "#1C4D8D" : "#5B8CFF";
+    const disabledColor = resolvedMode === "light" ? "#94A3B8" : "#AAB2C5";
     const successColor = "#10B981";
 
     const canAutoCompleteNow = canAutoComplete();
@@ -52,7 +55,7 @@ function Toolbar({ onErase }: Props) {
                         size={24}
                         color={history.length === 0 ? disabledColor : primaryColor}
                     />
-                    <Text className={`text-sm font-medium ${history.length === 0 ? 'text-light-textSecondary dark:text-dark-textSecondary' : 'text-light-textPrimary dark:text-dark-textPrimary'}`}>
+                    <Text className={`text-sm font-medium ${history.length === 0 ? 'text-muted' : 'text-foreground'}`}>
                         Undo
                     </Text>
                 </Pressable>
@@ -62,7 +65,7 @@ function Toolbar({ onErase }: Props) {
                     onPress={onErase}
                 >
                     <FontAwesome5 name="eraser" size={24} color={primaryColor} />
-                    <Text className="text-sm font-medium text-light-textPrimary dark:text-dark-textPrimary">Erase</Text>
+                    <Text className="text-sm font-medium text-foreground">Erase</Text>
                 </Pressable>
 
                 <Pressable
@@ -74,17 +77,38 @@ function Toolbar({ onErase }: Props) {
                         size={24}
                         color={isPencilMode ? secondaryColor : primaryColor}
                     />
-                    <Text className={`text-sm font-medium ${isPencilMode ? 'text-light-primary dark:text-dark-primary' : 'text-light-textPrimary dark:text-dark-textPrimary'}`}>
+                    <Text className={`text-sm font-medium ${isPencilMode ? 'text-foreground' : 'text-foreground'}`}>
                         Pencil
                     </Text>
                 </Pressable>
 
                 <Pressable
                     className='flex-col items-center active:opacity-50'
-                    onPress={getHint}
+                    onPress={() => getHint(selected?.row ?? -1, selected?.col ?? -1)}
+                    disabled={hintsLeft === 0}
                 >
-                    <Fontisto name="lightbulb" size={24} color={primaryColor} />
-                    <Text className="text-sm font-medium text-light-textPrimary dark:text-dark-textPrimary">Hint</Text>
+                    <View style={{ position: 'relative' }}>
+                        <Fontisto name="lightbulb" size={24} color={hintsLeft === 0 ? disabledColor : primaryColor} />
+                        <View
+                            style={{
+                                position: 'absolute',
+                                top: -4,
+                                right: -8,
+                                backgroundColor: hintsLeft === 0 ? disabledColor : secondaryColor,
+                                borderRadius: 8,
+                                minWidth: 16,
+                                height: 16,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingHorizontal: 2,
+                            }}
+                        >
+                            <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', lineHeight: 14 }}>
+                                {hintsLeft}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text className={`text-sm font-medium ${hintsLeft === 0 ? 'text-muted' : 'text-foreground'}`}>Hint</Text>
                 </Pressable>
             </View>
         </View>

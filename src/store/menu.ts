@@ -5,6 +5,9 @@ import { create } from "zustand";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/** @deprecated Use `useTheme()` from `@/theme` instead. */
+export type AppTheme = "light" | "dark" | "ocean" | "sunset" | "forest" | "lavender";
+
 type Move = {
   row: number;
   col: number;
@@ -37,9 +40,13 @@ type UnsolvedGame = {
   savedAt: Date;
 };
 
+const MAX_HINTS = 2;
+
 type GameStore = {
   level: "easy" | "medium" | "hard" | "expert" | null;
   setLevel: (level: "easy" | "medium" | "hard" | "expert") => void;
+  hintsUsed: number;
+  hintsRemaining: () => number;
   oldGame: {
     grid: number[][];
     solvedGrid: number[][];
@@ -68,7 +75,7 @@ type GameStore = {
   undo: () => void;
   erase: () => void;
   togglePencilMode: () => void;
-  getHint: () => void;
+  getHint: (row: number, col: number) => void;
   togglePause: () => void;
   incrementTime: () => void;
   checkWin: () => boolean;
@@ -99,26 +106,27 @@ export const useMenuStore = create<GameStore>((set, get) => ({
   isGameOver: false,
   isGameWon: false,
   isPencilMode: false,
+  hintsUsed: 0,
   currentGameId: null,
   gameHistory: [],
   unsolvedGames: [],
+
+  hintsRemaining: () => MAX_HINTS - get().hintsUsed,
 
   startNewGame: () => {
     const currentLevel = get().level;
     if (!currentLevel) {
       return;
     }
-    const fullBoard = generateFullBoard();
-    const puzzleBoard = createPuzzle(fullBoard, currentLevel);
-    const notes = Array.from({ length: 9 }, () =>
-      Array.from({ length: 9 }, () => new Set<number>()),
-    );
-    const gameId = Date.now().toString();
+
+    // Clear the previous board so the loader shows immediately, then navigate.
+    // Puzzle generation runs in the next macrotask so the loader frame can paint
+    // before the JS thread is busy with the heavy computation.
     set({
-      board: puzzleBoard,
-      solution: fullBoard,
-      fixed: puzzleBoard.map((row) => [...row]),
-      notes,
+      board: null,
+      solution: null,
+      fixed: null,
+      notes: null,
       moves: 0,
       history: [],
       mistakes: 0,
@@ -127,16 +135,37 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       isGameOver: false,
       isGameWon: false,
       isPencilMode: false,
+      hintsUsed: 0,
       oldGame: null,
-      currentGameId: gameId,
+      currentGameId: null,
     });
+
     router.push("/board");
+
+    setTimeout(() => {
+      const fullBoard = generateFullBoard();
+      const puzzleBoard = createPuzzle(fullBoard, currentLevel);
+      const notes = Array.from({ length: 9 }, () =>
+        Array.from({ length: 9 }, () => new Set<number>()),
+      );
+      const gameId = Date.now().toString();
+      set({
+        board: puzzleBoard,
+        solution: fullBoard,
+        fixed: puzzleBoard.map((row) => [...row]),
+        notes,
+        currentGameId: gameId,
+      });
+    }, 50);
   },
 
   handleInput: (row, col, value) => {
     const { board, solution, fixed, isPencilMode, notes, mistakes, isPaused, isGameOver } = get();
     if (!board || !solution || !notes || row < 0 || col < 0 || isPaused || isGameOver) return;
     if (fixed?.[row][col] !== null) return;
+    // Lock: prevent changing a correctly entered number
+    const current = board[row][col];
+    if (current !== null && current === solution[row][col]) return;
 
     // Handle erase (value is null)
     if (value === null) {
@@ -224,28 +253,27 @@ export const useMenuStore = create<GameStore>((set, get) => ({
   erase: () => {
     const { board, fixed, notes } = get();
     if (!board || !notes) return;
-
-    // Find selected cell from grid component - we'll pass it as parameter
-    // For now, this will be called from grid with selected cell
+    // erase is handled via handleInput(row, col, null) from grid
   },
 
   togglePencilMode: () => {
     set({ isPencilMode: !get().isPencilMode });
   },
 
-  getHint: () => {
-    const { board, solution, fixed } = get();
+  getHint: (row: number, col: number) => {
+    const { board, solution, fixed, hintsUsed } = get();
     if (!board || !solution) return;
-
-    // Find an empty cell and fill it with the correct value
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
-        if (board[r][c] === null && fixed?.[r][c] === null) {
-          get().handleInput(r, c, solution[r][c]);
-          return;
-        }
-      }
-    }
+    // Enforce max hints per game
+    if (hintsUsed >= MAX_HINTS) return;
+    // Selected cell must be empty and not original-fixed
+    if (row < 0 || col < 0) return;
+    if (fixed?.[row][col] !== null) return;
+    const current = board[row][col];
+    // Cell must be empty or incorrectly filled
+    const correct = solution[row][col];
+    if (current === correct) return;
+    set({ hintsUsed: hintsUsed + 1 });
+    get().handleInput(row, col, correct);
   },
 
   togglePause: () => {
@@ -388,6 +416,7 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       isGameOver: false,
       isGameWon: false,
       isPencilMode: false,
+      hintsUsed: 0,
       oldGame: null,
     });
 

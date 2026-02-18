@@ -1,0 +1,356 @@
+@import "tailwindcss";
+@import "uniwind";
+
+@theme {
+    --font-sans: "Rubik";
+
+    --color-background: var(--color-background);
+    --color-surface: var(--color-surface);
+    --color-border: var(--color-border);
+    --color-primary: var(--color-primary);
+    --color-primary-soft: var(--color-primary-soft);
+    --color-foreground: var(--color-foreground);
+    --color-muted: var(--color-muted);
+    --color-error: var(--color-error);
+    --color-error-bg: var(--color-error-bg);
+    --color-error-bg-dark: var(--color-error-bg-dark);
+    --color-error-text: var(--color-error-text);
+    --color-error-text-dark: var(--color-error-text-dark);
+    --color-cell-selected: var(--color-cell-selected);
+    --color-cell-same: var(--color-cell-same);
+    --color-cell-related: var(--color-cell-related);
+    --color-number-fill: var(--color-number-fill);
+    --color-number-user: var(--color-number-user);
+    --color-note: var(--color-note);
+}
+
+@layer theme {
+    :root {
+
+        /* ───────── LIGHT (alias for light-default) ───────── */
+        @variant light {
+            --color-background: #F4F7FB;
+            --color-surface: #FFFFFF;
+            --color-border: #D9E1F0;
+
+            --color-primary: #1C4D8D;
+            --color-primary-soft: #4988C4;
+
+            --color-foreground: #0F2854;
+            --color-muted: #4A628A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: #4988C4;
+            --color-cell-same: rgba(73, 136, 196, 0.7);
+            --color-cell-related: rgba(73, 136, 196, 0.08);
+
+            --color-number-fill: #0F2854;
+            --color-number-user: #1C4D8D;
+            --color-note: #4A628A;
+        }
+
+        /* ───────── DARK (alias for dark-default) ───────── */
+        @variant dark {
+            --color-background: #161A22;
+            --color-surface: #1D2230;
+            --color-border: #2A3142;
+
+            --color-primary: #5B8CFF;
+            --color-primary-soft: #7FA7FF;
+
+            --color-foreground: #E6EAF2;
+            --color-muted: #AAB2C5;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: #7FA7FF;
+            --color-cell-same: rgba(127, 167, 255, 0.7);
+            --color-cell-related: rgba(91, 140, 255, 0.1);
+
+            --color-number-fill: #E6EAF2;
+            --color-number-user: #5B8CFF;
+            --color-note: #AAB2C5;
+        }
+
+        /* ───────── LIGHT DEFAULT ───────── */
+        @variant light-default {
+            --color-background: #F4F7FB;
+            --color-surface: #FFFFFF;
+            --color-border: #D9E1F0;
+
+            --color-primary: #1C4D8D;
+            --color-primary-soft: #4988C4;
+
+            --color-foreground: #0F2854;
+            --color-muted: #4A628A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: #4988C4;
+            --color-cell-same: rgba(73, 136, 196, 0.7);
+            --color-cell-related: rgba(73, 136, 196, 0.08);
+
+            --color-number-fill: #0F2854;
+            --color-number-user: #1C4D8D;
+            --color-note: #4A628A;
+        }
+
+        /* ───────── DARK DEFAULT ───────── */
+        @variant dark-default {
+            --color-background: #161A22;
+            --color-surface: #1D2230;
+            --color-border: #2A3142;
+
+            --color-primary: #5B8CFF;
+            --color-primary-soft: #7FA7FF;
+
+            --color-foreground: #E6EAF2;
+            --color-muted: #AAB2C5;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: #7FA7FF;
+            --color-cell-same: rgba(127, 167, 255, 0.7);
+            --color-cell-related: rgba(91, 140, 255, 0.1);
+
+            --color-number-fill: #E6EAF2;
+            --color-number-user: #5B8CFF;
+            --color-note: #AAB2C5;
+        }
+
+        /* ───────── LIGHT OCEAN ───────── */
+        @variant light-ocean {
+            --color-background: #F4F7FB;
+            --color-surface: #FFFFFF;
+            --color-border: #D9E1F0;
+
+            --color-primary: oklch(0.62 0.16 195);
+            --color-primary-soft: oklch(0.72 0.13 200);
+
+            --color-foreground: #0F2854;
+            --color-muted: #4A628A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: oklch(0.62 0.16 195);
+            --color-cell-same: oklch(0.62 0.1 195);
+            --color-cell-related: rgba(73, 136, 196, 0.08);
+
+            --color-number-fill: #0F2854;
+            --color-number-user: oklch(0.62 0.16 195);
+            --color-note: #4A628A;
+        }
+
+        /* ───────── DARK OCEAN ───────── */
+        @variant dark-ocean {
+            --color-background: #161A22;
+            --color-surface: #1D2230;
+            --color-border: #2A3142;
+
+            --color-primary: oklch(0.62 0.16 195);
+            --color-primary-soft: oklch(0.72 0.13 200);
+
+            --color-foreground: #E6EAF2;
+            --color-muted: #AAB2C5;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: oklch(0.62 0.16 195);
+            --color-cell-same: oklch(0.62 0.1 195);
+            --color-cell-related: rgba(91, 140, 255, 0.1);
+
+            --color-number-fill: #E6EAF2;
+            --color-number-user: oklch(0.62 0.16 195);
+            --color-note: #AAB2C5;
+        }
+
+        /* ───────── LIGHT FOREST ───────── */
+        @variant light-forest {
+            --color-background: #F4F7FB;
+            --color-surface: #FFFFFF;
+            --color-border: #D9E1F0;
+
+            --color-primary: oklch(0.58 0.17 145);
+            --color-primary-soft: oklch(0.68 0.14 148);
+
+            --color-foreground: #0F2854;
+            --color-muted: #4A628A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: oklch(0.58 0.17 145);
+            --color-cell-same: oklch(0.58 0.11 145);
+            --color-cell-related: rgba(73, 136, 196, 0.08);
+
+            --color-number-fill: #0F2854;
+            --color-number-user: oklch(0.58 0.17 145);
+            --color-note: #4A628A;
+        }
+
+        /* ───────── DARK FOREST ───────── */
+        @variant dark-forest {
+            --color-background: #161A22;
+            --color-surface: #1D2230;
+            --color-border: #2A3142;
+
+            --color-primary: oklch(0.58 0.17 145);
+            --color-primary-soft: oklch(0.68 0.14 148);
+
+            --color-foreground: #E6EAF2;
+            --color-muted: #AAB2C5;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: oklch(0.58 0.17 145);
+            --color-cell-same: oklch(0.58 0.11 145);
+            --color-cell-related: rgba(91, 140, 255, 0.1);
+
+            --color-number-fill: #E6EAF2;
+            --color-number-user: oklch(0.58 0.17 145);
+            --color-note: #AAB2C5;
+        }
+
+        /* ───────── LIGHT LAVENDER ───────── */
+        @variant light-lavender {
+            --color-background: #F4F7FB;
+            --color-surface: #FFFFFF;
+            --color-border: #D9E1F0;
+
+            --color-primary: oklch(0.65 0.2 290);
+            --color-primary-soft: oklch(0.74 0.16 288);
+
+            --color-foreground: #0F2854;
+            --color-muted: #4A628A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: oklch(0.65 0.2 290);
+            --color-cell-same: oklch(0.65 0.13 290);
+            --color-cell-related: rgba(73, 136, 196, 0.08);
+
+            --color-number-fill: #0F2854;
+            --color-number-user: oklch(0.65 0.2 290);
+            --color-note: #4A628A;
+        }
+
+        /* ───────── DARK LAVENDER ───────── */
+        @variant dark-lavender {
+            --color-background: #161A22;
+            --color-surface: #1D2230;
+            --color-border: #2A3142;
+
+            --color-primary: oklch(0.65 0.2 290);
+            --color-primary-soft: oklch(0.74 0.16 288);
+
+            --color-foreground: #E6EAF2;
+            --color-muted: #AAB2C5;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: oklch(0.65 0.2 290);
+            --color-cell-same: oklch(0.65 0.13 290);
+            --color-cell-related: rgba(91, 140, 255, 0.1);
+
+            --color-number-fill: #E6EAF2;
+            --color-number-user: oklch(0.65 0.2 290);
+            --color-note: #AAB2C5;
+        }
+
+        /* ───────── LIGHT SUNSET ───────── */
+        @variant light-sunset {
+            --color-background: #FDF6EE;
+            --color-surface: #FFFFFF;
+            --color-border: #F0DCCB;
+
+            --color-primary: oklch(0.62 0.19 38);
+            --color-primary-soft: oklch(0.72 0.15 40);
+
+            --color-foreground: #3B1F0A;
+            --color-muted: #8A5A3A;
+
+            --color-error: #D64545;
+            --color-error-bg: #FDECEA;
+            --color-error-bg-dark: #FDECEA;
+            --color-error-text: #D64545;
+            --color-error-text-dark: #D64545;
+
+            --color-cell-selected: oklch(0.62 0.19 38);
+            --color-cell-same: oklch(0.62 0.12 38);
+            --color-cell-related: rgba(200, 100, 40, 0.08);
+
+            --color-number-fill: #3B1F0A;
+            --color-number-user: oklch(0.62 0.19 38);
+            --color-note: #8A5A3A;
+        }
+
+        /* ───────── DARK SUNSET ───────── */
+        @variant dark-sunset {
+            --color-background: #1A1210;
+            --color-surface: #231815;
+            --color-border: #3A2820;
+
+            --color-primary: oklch(0.72 0.19 38);
+            --color-primary-soft: oklch(0.80 0.15 40);
+
+            --color-foreground: #F2E6DF;
+            --color-muted: #C5A898;
+
+            --color-error: #FF6B6B;
+            --color-error-bg: rgba(255, 107, 107, 0.18);
+            --color-error-bg-dark: rgba(255, 107, 107, 0.18);
+            --color-error-text: #FF6B6B;
+            --color-error-text-dark: #FF6B6B;
+
+            --color-cell-selected: oklch(0.72 0.19 38);
+            --color-cell-same: oklch(0.72 0.12 38);
+            --color-cell-related: rgba(200, 100, 40, 0.12);
+
+            --color-number-fill: #F2E6DF;
+            --color-number-user: oklch(0.72 0.19 38);
+            --color-note: #C5A898;
+        }
+
+
+    }
+}

@@ -1,49 +1,63 @@
-import { Pressable, View, useColorScheme } from "react-native"
+import { Pressable, View } from "react-native"
 import { FontAwesome6 } from "@expo/vector-icons"
-import { useEffect } from "react"
+import { useEffect, memo } from "react"
 import { Text } from "@/components/ui/text"
 import { useMenuStore } from "@/store/menu"
+import { useTheme } from "@/theme"
 import { formateElapsedTime } from "@/utils/formate-time"
 
-
-type Props = {}
-
-const InfoBar = (props: Props) => {
-    const { level, mistakes, timeElapsed, isPaused, togglePause, incrementTime } = useMenuStore();
-    const colorScheme = useColorScheme();
-    const primaryColor = colorScheme === "dark" ? "#E6EAF2" : "#0F2854";
+// Isolated component — only this re-renders every second
+const TimeSection = memo(() => {
+    const { timeElapsed, isPaused, togglePause, incrementTime, saveUnsolvedGame, isGameOver, isGameWon } = useMenuStore();
+    const { resolvedMode } = useTheme();
+    const primaryColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
 
     useEffect(() => {
         const timer = setInterval(() => {
             incrementTime();
+            // Auto-save every second so accidental closes don't lose progress
+            if (!isGameOver && !isGameWon) {
+                saveUnsolvedGame();
+            }
         }, 1000);
-
         return () => clearInterval(timer);
-    }, [incrementTime]);
+    }, [incrementTime, saveUnsolvedGame, isGameOver, isGameWon]);
+
+    return (
+        <View className="flex-1 flex-row items-center justify-end">
+            <View className="mr-2 gap-0">
+                <Text className="text-foreground text-lg font-medium leading-tight">Time</Text>
+                <Text className="text-foreground text-xl font-bold leading-tight">
+                    {formateElapsedTime(timeElapsed)}
+                </Text>
+            </View>
+            <Pressable className="active:opacity-60" onPress={togglePause}>
+                {isPaused ? (
+                    <FontAwesome6 name="play-circle" size={28} color={primaryColor} />
+                ) : (
+                    <FontAwesome6 name="pause-circle" size={28} color={primaryColor} />
+                )}
+            </Pressable>
+        </View>
+    );
+});
+
+type Props = {}
+
+const InfoBar = (props: Props) => {
+    const { level, mistakes } = useMenuStore();
 
     return (
         <View className="w-full flex-row justify-between">
-            <View className="gap-0">
-                <Text className="text-light-textPrimary dark:text-dark-textPrimary text-lg font-medium leading-tight">Difficulty</Text>
-                <Text className="text-light-primary dark:text-dark-primary text-xl font-bold leading-tight capitalize">{level || 'Medium'}</Text>
+            <View className="flex-1 gap-0">
+                <Text className="text-foreground text-lg font-medium leading-tight">Difficulty</Text>
+                <Text className="text-foreground text-xl font-bold leading-tight capitalize">{level || 'Medium'}</Text>
             </View>
-            <View className="gap-0 flex-col items-center">
-                <Text className="text-light-textPrimary dark:text-dark-textPrimary text-lg font-medium leading-tight">Mistake</Text>
-                <Text className="text-light-primary dark:text-dark-primary text-xl font-bold leading-tight">{mistakes}/3</Text>
+            <View className="flex-1 gap-0 flex-col items-center">
+                <Text className="text-foreground text-lg font-medium leading-tight">Mistake</Text>
+                <Text className="text-foreground text-xl font-bold leading-tight">{mistakes}/3</Text>
             </View>
-            <View className="flex-row items-center">
-                <View className="mr-2 gap-0">
-                    <Text className="text-light-textPrimary dark:text-dark-textPrimary text-lg font-medium leading-tight">Time</Text>
-                    <Text className="text-light-primary dark:text-dark-primary text-xl font-bold leading-tight">{formateElapsedTime(timeElapsed)}</Text>
-                </View>
-                <Pressable className="active:opacity-60" onPress={togglePause}>
-                    {isPaused ? (
-                        <FontAwesome6 name="play-circle" size={28} color={primaryColor} />
-                    ) : (
-                        <FontAwesome6 name="pause-circle" size={28} color={primaryColor} />
-                    )}
-                </Pressable>
-            </View>
+            <TimeSection />
         </View>
     )
 }

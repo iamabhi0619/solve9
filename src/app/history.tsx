@@ -1,7 +1,8 @@
-import { View, FlatList, Pressable, useColorScheme } from "react-native";
+import { View, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { useMenuStore } from "@/store/menu";
+import { useTheme } from "@/theme";
 import { formateElapsedTime } from "@/utils/formate-time";
 import { router } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -9,7 +10,9 @@ import { useEffect } from "react";
 
 export default function HistoryScreen() {
     const { gameHistory, clearHistory, loadHistoryAndUnsolved } = useMenuStore();
-    const colorScheme = useColorScheme();
+    const { resolvedMode } = useTheme();
+    const iconColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
+    const emptyIconColor = resolvedMode === "light" ? "#9CA3AF" : "#6B7280";
 
     useEffect(() => {
         loadHistoryAndUnsolved();
@@ -32,7 +35,7 @@ export default function HistoryScreen() {
         });
 
         return (
-            <View className="bg-light-surface dark:bg-dark-surface rounded-xl p-4 mb-3 border border-light-border dark:border-dark-border">
+            <View className="bg-surface rounded-xl p-4 mb-3 border border-border">
                 <View className="flex-row items-center justify-between mb-2">
                     <View className="flex-row items-center">
                         {item.isWin ? (
@@ -40,11 +43,11 @@ export default function HistoryScreen() {
                         ) : (
                             <FontAwesome5 name="times-circle" size={20} color="#EF4444" />
                         )}
-                        <Text className="ml-2 text-lg font-bold capitalize text-light-textPrimary dark:text-dark-textPrimary">
+                        <Text className="ml-2 text-lg font-bold capitalize text-foreground">
                             {item.level}
                         </Text>
                     </View>
-                    <Text className="text-light-textSecondary dark:text-dark-textSecondary text-sm">
+                    <Text className="text-muted text-sm">
                         {formattedDate}
                     </Text>
                 </View>
@@ -52,31 +55,31 @@ export default function HistoryScreen() {
                 <View className="flex-row justify-between items-center">
                     <View className="flex-row gap-4">
                         <View>
-                            <Text className="text-xs text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-xs text-muted">
                                 Time
                             </Text>
-                            <Text className="text-sm font-semibold text-light-textPrimary dark:text-dark-textPrimary">
+                            <Text className="text-sm font-semibold text-foreground">
                                 {formateElapsedTime(item.timeElapsed)}
                             </Text>
                         </View>
                         <View>
-                            <Text className="text-xs text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-xs text-muted">
                                 Moves
                             </Text>
-                            <Text className="text-sm font-semibold text-light-textPrimary dark:text-dark-textPrimary">
+                            <Text className="text-sm font-semibold text-foreground">
                                 {item.moves}
                             </Text>
                         </View>
                         <View>
-                            <Text className="text-xs text-light-textSecondary dark:text-dark-textSecondary">
+                            <Text className="text-xs text-muted">
                                 Mistakes
                             </Text>
-                            <Text className="text-sm font-semibold text-light-textPrimary dark:text-dark-textPrimary">
+                            <Text className="text-sm font-semibold text-foreground">
                                 {item.mistakes}/3
                             </Text>
                         </View>
                     </View>
-                    <Text className="text-xs text-light-textSecondary dark:text-dark-textSecondary">
+                    <Text className="text-xs text-muted">
                         {formattedTime}
                     </Text>
                 </View>
@@ -87,7 +90,7 @@ export default function HistoryScreen() {
     return (
         <SafeAreaView
             style={{ flex: 1 }}
-            className="bg-light-background dark:bg-dark-background"
+            className="bg-background"
         >
             <View className="flex-1 px-6">
                 <View className="flex-row items-center justify-between py-4">
@@ -95,10 +98,10 @@ export default function HistoryScreen() {
                         <FontAwesome5
                             name="arrow-left"
                             size={24}
-                            color={colorScheme === "dark" ? "#E6EAF2" : "#0F2854"}
+                            color={iconColor}
                         />
                     </Pressable>
-                    <Text className="text-2xl font-bold text-light-textPrimary dark:text-dark-textPrimary">
+                    <Text className="text-2xl font-bold text-foreground">
                         Game History
                     </Text>
                     <Pressable
@@ -119,12 +122,12 @@ export default function HistoryScreen() {
                         <FontAwesome5
                             name="history"
                             size={64}
-                            color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+                            color={emptyIconColor}
                         />
-                        <Text className="text-xl text-light-textSecondary dark:text-dark-textSecondary">
+                        <Text className="text-xl text-muted">
                             No game history yet
                         </Text>
-                        <Text className="text-light-textSecondary dark:text-dark-textSecondary mt-2 text-center">
+                        <Text className="text-muted mt-2 text-center">
                             Complete some games to see your history here
                         </Text>
                     </View>

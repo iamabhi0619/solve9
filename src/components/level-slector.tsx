@@ -37,12 +37,12 @@ export default function LevelSelector() {
 
   return (
     <View className="w-full mt-10">
-      <View className="flex-row bg-surface rounded-full border border-light-border dark:border-dark-border">
+      <View className="flex-row bg-surface rounded-full border border-border">
         <Animated.View
           className="absolute rounded-full bg-primary"
           style={[
             animatedIndicatorStyle,
-            { width: INDICATOR_WIDTH, top: 4, bottom: 4 },
+            // { width: INDICATOR_WIDTH, top: 4, bottom: 4 },
           ]}
         />
 
@@ -50,11 +50,11 @@ export default function LevelSelector() {
           <Pressable
             key={item.id}
             onPress={() => setLevel(item.id)}
-            className={`flex-1 items-center justify-center py-2 px-3 ${level === item.id ? "bg-light-primary rounded-full" : "opacity-80"}`}
-            style={{ width: INDICATOR_WIDTH }}
+            className={`flex-1 items-center justify-center py-2 ${level === item.id ? "bg-primary rounded-full" : "opacity-80"}`}
+          // style={{ width: INDICATOR_WIDTH }}
           >
             <Text
-              className={`text-xl font-medium ${level === item.id ? "text-light-surface dark:text-dark-textPrimary" : "text-light-textSecondary dark:text-dark-textSecondary"}`}
+              className={`text-lg font-semibold ${level === item.id ? "text-background" : "text-muted"}`}
             >
               {item.label}
             </Text>

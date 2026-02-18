@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import { useState, useMemo, useCallback } from "react";
 import SudokuCell from "./SudokuCell";
 import NumberRow from "./number-row";
@@ -14,32 +14,31 @@ const Grid = () => {
     /* -------------------- STORE -------------------- */
     const { board, fixed, solution, notes, moves, handleInput, isPaused } = useMenuStore();
 
+    /* -------------------- DIMENSIONS -------------------- */
+    const { width: screenWidth } = useWindowDimensions();
+    // Leave horizontal padding (48px each side) and a little breathing room
+    const gridSize = Math.min(screenWidth - 32, 380);
+    const cellSize = Math.floor(gridSize / GRID_SIZE);
+    const actualGridSize = cellSize * GRID_SIZE;
+
     /* -------------------- STATE -------------------- */
+    const [selected, setSelected] = useState<{ row: number; col: number } | null>(null);
 
-    const [selected, setSelected] = useState<{
-        row: number;
-        col: number;
-    } | null>(null);
-
-    // Use the fixed cells from the store to determine which cells are editable
-    const isFixedCell = useCallback((row: number, col: number) => {
-        return fixed?.[row]?.[col] !== null;
-    }, [fixed]);
+    const isFixedCell = useCallback(
+        (row: number, col: number) => fixed?.[row]?.[col] !== null,
+        [fixed]
+    );
 
     /* -------------------- DERIVED DATA -------------------- */
-
     const numberCounts = useMemo(() => {
         const counts = Array.from({ length: GRID_SIZE + 1 }, () => 0);
-
-        for (let r = 0; r < GRID_SIZE; r++) {
+        for (let r = 0; r < GRID_SIZE; r++)
             for (let c = 0; c < GRID_SIZE; c++) {
-                const value = board?.[r][c] ?? null;
-                if (value !== null) counts[value]++;
+                const v = board?.[r][c] ?? null;
+                if (v !== null) counts[v]++;
             }
-        }
-
         return counts;
-    }, [board, GRID_SIZE]);
+    }, [board]);
 
     const remaining = useCallback(
         (num: number) => Math.max(0, MAX_PER_NUMBER - numberCounts[num]),
@@ -47,24 +46,18 @@ const Grid = () => {
     );
 
     /* -------------------- HANDLERS -------------------- */
-
-    const handleCellSelect = useCallback((row: number, col: number) => {
-        if (!isPaused) {
-            setSelected({ row, col });
-        }
-    }, [isPaused]);
+    const handleCellSelect = useCallback(
+        (row: number, col: number) => {
+            if (!isPaused) setSelected({ row, col });
+        },
+        [isPaused]
+    );
 
     const handleErase = useCallback(() => {
-        if (selected && !isPaused) {
-            handleInput(selected.row, selected.col, null);
-        }
+        if (selected && !isPaused) handleInput(selected.row, selected.col, null);
     }, [selected, handleInput, isPaused]);
 
     /* -------------------- HELPERS -------------------- */
-
-    const isSameRow = (r: number) => selected?.row === r;
-    const isSameCol = (c: number) => selected?.col === c;
-
     const isSameBox = (r: number, c: number) => {
         if (!selected) return false;
         return (
@@ -75,62 +68,111 @@ const Grid = () => {
 
     const isSameNumber = (r: number, c: number) => {
         if (!selected) return false;
-        const selectedValue = board?.[selected.row][selected.col] ?? null;
-        const cellValue = board?.[r][c] ?? null;
-        return selectedValue !== null && selectedValue === cellValue;
+        const sv = board?.[selected.row][selected.col] ?? null;
+        const cv = board?.[r][c] ?? null;
+        return sv !== null && sv === cv;
     };
 
     const isError = (r: number, c: number) => {
-        const cellValue = board?.[r][c];
-        const correctValue = solution?.[r][c];
-        return cellValue !== null && cellValue !== correctValue;
+        const cv = board?.[r][c];
+        return cv !== null && cv !== solution?.[r][c];
     };
 
-    const getBorderClass = (r: number, c: number) => `
-    border-[0.25px] border-light-primary dark:border-dark-primary
-    ${c % BOX_SIZE === BOX_SIZE - 1 && c !== GRID_SIZE - 1 ? "border-r-2" : ""}
-    ${r % BOX_SIZE === BOX_SIZE - 1 && r !== GRID_SIZE - 1 ? "border-b-2" : ""}
-    ${c === 0 ? "border-l-2" : ""}
-    ${r === 0 ? "border-t-2" : ""}
-    ${c === GRID_SIZE - 1 ? "border-r-2" : ""}
-    ${r === GRID_SIZE - 1 ? "border-b-2" : ""}
-  `;
+    // A cell is "locked" when the user correctly entered the right number (not original-fixed)
+    const isLockedCell = useCallback(
+        (row: number, col: number) => {
+            if (!board || !solution) return false;
+            const val = board[row][col];
+            if (val === null) return false;
+            if (fixed?.[row][col] !== null) return false; // original fixed cell, not locked
+            return val === solution[row][col];
+        },
+        [board, solution, fixed]
+    );
 
     /* -------------------- RENDER -------------------- */
-
     return (
-        <View className="w-full items-center justify-center py-4 ">
+        <View className="w-full items-center justify-center py-3">
             <InfoBar />
-            <View className="shadow-md">
-                {board?.map((row, rowIndex) => (
-                    <View key={rowIndex} className="flex-row">
-                        {row.map((_, colIndex) => (
-                            <SudokuCell
-                                key={colIndex}
-                                value={board?.[rowIndex][colIndex]}
-                                isSelected={
-                                    selected?.row === rowIndex &&
-                                    selected?.col === colIndex
-                                }
-                                isRelated={
-                                    isSameRow(rowIndex) ||
-                                    isSameCol(colIndex) ||
-                                    isSameBox(rowIndex, colIndex)
-                                }
-                                isSameNumber={isSameNumber(rowIndex, colIndex)}
-                                isFixed={isFixedCell(rowIndex, colIndex)}
-                                isError={isError(rowIndex, colIndex)}
-                                notes={notes?.[rowIndex][colIndex] || new Set()}
-                                onPress={() => handleCellSelect(rowIndex, colIndex)}
-                                borderClass={getBorderClass(rowIndex, colIndex)}
-                            />
-                        ))}
-                    </View>
-                ))}
+
+            {/* Outer grid wrapper */}
+            <View
+                className="border-2 border-primary bg-surface rounded-xl overflow-hidden mt-2"
+                style={{
+                    width: actualGridSize + 4,
+                    height: actualGridSize + 4,
+                    shadowColor: "#1C4D8D",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.18,
+                    shadowRadius: 10,
+                    elevation: 6,
+                }}
+            >
+                <View className="flex-col" style={{ width: actualGridSize, height: actualGridSize }}>
+                    {/* 3×3 boxes */}
+                    {[0, 1, 2].map((boxRow) => (
+                        <View key={boxRow} className="flex-row">
+                            {[0, 1, 2].map((boxCol) => (
+                                <View
+                                    key={boxCol}
+                                    className={[
+                                        "flex-col overflow-hidden",
+                                        boxCol < 2 ? "border-r-2 border-primary" : "",
+                                        boxRow < 2 ? "border-b-2 border-primary" : "",
+                                    ].join(" ")}
+                                    style={{ width: cellSize * 3, height: cellSize * 3 }}
+                                >
+                                    {[0, 1, 2].map((cellRow) => {
+                                        const r = boxRow * BOX_SIZE + cellRow;
+                                        return (
+                                            <View key={cellRow} className="flex-row">
+                                                {[0, 1, 2].map((cellCol) => {
+                                                    const c = boxCol * BOX_SIZE + cellCol;
+                                                    return (
+                                                        <View
+                                                            key={cellCol}
+                                                            className={[
+                                                                cellCol < 2 ? "border-r border-border" : "",
+                                                                cellRow < 2 ? "border-b border-border" : "",
+                                                            ].join(" ")}
+                                                            style={{ width: cellSize, height: cellSize }}
+                                                        >
+                                                            <SudokuCell
+                                                                value={board?.[r][c] ?? null}
+                                                                isSelected={
+                                                                    selected?.row === r && selected?.col === c
+                                                                }
+                                                                isRelated={
+                                                                    selected?.row === r ||
+                                                                    selected?.col === c ||
+                                                                    isSameBox(r, c)
+                                                                }
+                                                                isSameNumber={isSameNumber(r, c)}
+                                                                isFixed={isFixedCell(r, c)}
+                                                                isLocked={isLockedCell(r, c)}
+                                                                isError={isError(r, c)}
+                                                                notes={notes?.[r][c] || new Set()}
+                                                                onPress={() => handleCellSelect(r, c)}
+                                                                cellSize={cellSize}
+                                                            />
+                                                        </View>
+                                                    );
+                                                })}
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            ))}
+                        </View>
+                    ))}
+                </View>
             </View>
-            <Toolbar onErase={handleErase} />
+
+            <Toolbar onErase={handleErase} selected={selected} />
             <NumberRow
-                onNumberPress={(num) => handleInput(selected?.row ?? -1, selected?.col ?? -1, num)}
+                onNumberPress={(num) =>
+                    handleInput(selected?.row ?? -1, selected?.col ?? -1, num)
+                }
                 remaining={remaining}
             />
         </View>

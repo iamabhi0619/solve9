@@ -6,7 +6,7 @@ export function Text({ style, ...props }: TextProps) {
 
 const styles = StyleSheet.create({
   default: {
-    fontFamily: "Rubik-Regular",
+    fontFamily: "Rubik",
     backgroundColor: "transparent",
   },
 });

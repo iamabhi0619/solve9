@@ -5,23 +5,23 @@ import Banner from "./components/banner";
 import Footer from "./components/footer";
 import GameModal from "./components/game-modal";
 import PauseOverlay from "./components/pause-overlay";
+import BoardLoader from "./components/board-loader";
 import { useMenuStore } from "@/store/menu";
 import { useState, useEffect } from "react";
 import { router } from "expo-router";
 
 export default function IndexScreen() {
-    const { isGameOver, isGameWon, isPaused, togglePause, saveUnsolvedGame } = useMenuStore();
+    const { isGameOver, isGameWon, isPaused, togglePause, saveUnsolvedGame, board } = useMenuStore();
     const [showModal, setShowModal] = useState(false);
 
     // Handle Android back button
     useEffect(() => {
         const backAction = () => {
-            // Only save if game is not over or won
             if (!isGameOver && !isGameWon) {
                 saveUnsolvedGame();
             }
             router.back();
-            return true; // Prevent default behavior
+            return true;
         };
 
         const backHandler = BackHandler.addEventListener(
@@ -37,12 +37,20 @@ export default function IndexScreen() {
         setShowModal(true);
     }
 
+    // Board is being generated in the background — show loader
+    if (!board) {
+        return (
+            <SafeAreaView style={{ flex: 1 }}>
+                <BoardLoader />
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-            className="bg-light-background dark:bg-dark-background"
         >
-            <View className="h-full items-center justify-center w-full">
+            <View className="h-full items-center justify-center w-full bg-background">
                 <Banner />
                 <View className="flex-1 w-full justify-center px-4">
                     <Grid />
