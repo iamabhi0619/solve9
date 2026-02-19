@@ -1,7 +1,7 @@
 "use client";
 
-import { IconBrandGithub, IconDownload, IconMenu2, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { IconBrandGithub, IconDownload, IconMenu2, IconX, IconHome, IconSparkles, IconTool, IconChartBar, IconCode, IconBrandAndroid } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { latestVersion } from "@/lib/versions";
 import Link from "next/link";
@@ -10,14 +10,36 @@ import Image from "next/image";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const { homeRef, featuresRef, toolsRef, statsRef, opensourceRef, downloadRef, scrollToSection } = useScroll();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrolled(scrollTop > 20);
+      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleDirectDownload = () => {
     window.open(latestVersion.downloadLink, "_blank");
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 bg-accent/30 backdrop-blur-md">
+    <nav className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
+        scrolled
+          ? "bg-card/80 backdrop-blur-xl border-white/10 shadow-lg shadow-black/20"
+          : "bg-transparent backdrop-blur-md border-transparent"
+      }`}>
+      {/* Scroll progress bar */}
+      <div
+        className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary via-violet-400 to-accent transition-all duration-150 z-50"
+        style={{ width: `${scrollProgress}%` }}
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -33,38 +55,38 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-
-            <Button onClick={() => scrollToSection(downloadRef)} className="flex">
-              <IconDownload className="w-4 h-4 mr-2" />
-              Downloads
-            </Button>
-            <button
-              onClick={() => scrollToSection(statsRef)}
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
-            >
-              Stats
-            </button>
-            <button
-              onClick={() => scrollToSection(opensourceRef)}
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
-            >
-              Open Source
-            </button>
+            {[
+              { label: "Features", ref: featuresRef, icon: IconSparkles },
+              { label: "Tools", ref: toolsRef, icon: IconTool },
+              { label: "Stats", ref: statsRef, icon: IconChartBar },
+              { label: "Open Source", ref: opensourceRef, icon: IconCode },
+            ].map(({ label, ref, icon: Icon }) => (
+              <button
+                key={label}
+                onClick={() => scrollToSection(ref)}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5 group"
+              >
+                <Icon className="w-3.5 h-3.5 group-hover:text-primary transition-colors" />
+                {label}
+              </button>
+            ))}
           </div>
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" size="sm">
-              <Link href="https://github.com/iamabhi0619/solve9" target="_blank" rel="noopener noreferrer" className="flex">
-                <IconBrandGithub className="w-4 h-4 mr-2" />
+            <Link href="https://github.com/iamabhi0619/solve9" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="group">
+                <IconBrandGithub className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                 GitHub
-              </Link>
-            </Button>
-            <Button size="sm" onClick={() => scrollToSection(downloadRef)}>
-              <span className="flex">
-                <IconDownload className="w-4 h-4 mr-2" />
-                Download
-              </span>
+              </Button>
+            </Link>
+            <Button
+              size="sm"
+              onClick={() => scrollToSection(downloadRef)}
+              className="group shadow-md shadow-primary/20 hover:shadow-primary/40 transition-shadow"
+            >
+              <IconBrandAndroid className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+              Download
             </Button>
           </div>
 

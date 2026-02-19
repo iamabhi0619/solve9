@@ -113,7 +113,7 @@ export function OpenSource() {
             size="lg"
             className="bg-linear-to-r from-primary to-accent hover:opacity-90 transition-opacity text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25 group"
           >
-            <a href="https://github.com/iamabhi0619/solve9" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/iamabhi0619/solve9" target="_blank" rel="noopener noreferrer" className="flex items-center">
               <IconBrandGithub className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
               View on GitHub
             </a>

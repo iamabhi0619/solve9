@@ -41,84 +41,30 @@
         "expo-font",
         {
           "fonts": [
-            "./assets/fonts/Rubik-Light.ttf",
-            "./assets/fonts/Rubik-LightItalic.ttf",
             "./assets/fonts/Rubik-Regular.ttf",
-            "./assets/fonts/Rubik-Italic.ttf",
             "./assets/fonts/Rubik-Medium.ttf",
-            "./assets/fonts/Rubik-MediumItalic.ttf",
             "./assets/fonts/Rubik-SemiBold.ttf",
-            "./assets/fonts/Rubik-SemiBoldItalic.ttf",
-            "./assets/fonts/Rubik-Bold.ttf",
-            "./assets/fonts/Rubik-BoldItalic.ttf",
-            "./assets/fonts/Rubik-ExtraBold.ttf",
-            "./assets/fonts/Rubik-ExtraBoldItalic.ttf",
-            "./assets/fonts/Rubik-Black.ttf",
-            "./assets/fonts/Rubik-BlackItalic.ttf"
+            "./assets/fonts/Rubik-Bold.ttf"
           ],
           "android": {
             "fonts": [
               {
                 "fontFamily": "Rubik",
                 "fontDefinitions": [
-                  { "path": "./assets/fonts/Rubik-Light.ttf", "weight": 300 },
-                  {
-                    "path": "./assets/fonts/Rubik-LightItalic.ttf",
-                    "weight": 300,
-                    "style": "italic"
-                  },
                   { "path": "./assets/fonts/Rubik-Regular.ttf", "weight": 400 },
-                  { "path": "./assets/fonts/Rubik-Italic.ttf", "weight": 400, "style": "italic" },
                   { "path": "./assets/fonts/Rubik-Medium.ttf", "weight": 500 },
-                  {
-                    "path": "./assets/fonts/Rubik-MediumItalic.ttf",
-                    "weight": 500,
-                    "style": "italic"
-                  },
                   { "path": "./assets/fonts/Rubik-SemiBold.ttf", "weight": 600 },
-                  {
-                    "path": "./assets/fonts/Rubik-SemiBoldItalic.ttf",
-                    "weight": 600,
-                    "style": "italic"
-                  },
-                  { "path": "./assets/fonts/Rubik-Bold.ttf", "weight": 700 },
-                  {
-                    "path": "./assets/fonts/Rubik-BoldItalic.ttf",
-                    "weight": 700,
-                    "style": "italic"
-                  },
-                  { "path": "./assets/fonts/Rubik-ExtraBold.ttf", "weight": 800 },
-                  {
-                    "path": "./assets/fonts/Rubik-ExtraBoldItalic.ttf",
-                    "weight": 800,
-                    "style": "italic"
-                  },
-                  { "path": "./assets/fonts/Rubik-Black.ttf", "weight": 900 },
-                  {
-                    "path": "./assets/fonts/Rubik-BlackItalic.ttf",
-                    "weight": 900,
-                    "style": "italic"
-                  }
+                  { "path": "./assets/fonts/Rubik-Bold.ttf", "weight": 700 }
                 ]
               }
             ]
           },
           "ios": {
             "fonts": [
-              "./assets/fonts/Rubik-Light.ttf",
-              "./assets/fonts/Rubik-LightItalic.ttf",
               "./assets/fonts/Rubik-Regular.ttf",
-              "./assets/fonts/Rubik-Italic.ttf",
               "./assets/fonts/Rubik-Medium.ttf",
-              "./assets/fonts/Rubik-MediumItalic.ttf",
               "./assets/fonts/Rubik-SemiBold.ttf",
-              "./assets/fonts/Rubik-SemiBoldItalic.ttf",
-              "./assets/fonts/Rubik-Bold.ttf",
-              "./assets/fonts/Rubik-BoldItalic.ttf",
-              "./assets/fonts/Rubik-ExtraBold.ttf",
-              "./assets/fonts/Rubik-ExtraBoldItalic.ttf",
-              "./assets/fonts/Rubik-Black.ttf",
-              "./assets/fonts/Rubik-BlackItalic.ttf"
+              "./assets/fonts/Rubik-Bold.ttf"
             ]
           }
         }
