@@ -96,7 +96,7 @@ const GameModal = ({ visible, isWin, onClose }: Props) => {
                             onPress={handleNewGame}
                             className="bg-primary py-4 rounded-xl items-center active:opacity-80"
                         >
-                            <Text className="text-background text-lg font-bold">
+                            <Text className="text-background text-lg font-medium">
                                 New Game
                             </Text>
                         </Pressable>

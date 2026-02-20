@@ -11,8 +11,24 @@ import { useState, useEffect } from "react";
 import { router } from "expo-router";
 
 export default function IndexScreen() {
-    const { isGameOver, isGameWon, isPaused, togglePause, saveUnsolvedGame, board } = useMenuStore();
+    const { isGameOver, isGameWon, isPaused, togglePause, saveUnsolvedGame, board, restoreActiveGame, isGeneratingNewGame } = useMenuStore();
     const [showModal, setShowModal] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
+
+    // Restore active game if board is null (e.g., after app reload)
+    useEffect(() => {
+        // Don't try to restore if we're generating a new game
+        if (!board && !isRestoring && !isGeneratingNewGame) {
+            setIsRestoring(true);
+            restoreActiveGame().then((restored) => {
+                setIsRestoring(false);
+                if (!restored) {
+                    // No game to restore, go back to home
+                    router.replace("/");
+                }
+            });
+        }
+    }, [board, restoreActiveGame, isRestoring, isGeneratingNewGame]);
 
     // Handle Android back button
     useEffect(() => {
@@ -37,8 +53,8 @@ export default function IndexScreen() {
         setShowModal(true);
     }
 
-    // Board is being generated in the background — show loader
-    if (!board) {
+    // Board is being generated or restored — show loader
+    if (!board || isRestoring || isGeneratingNewGame) {
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <BoardLoader />

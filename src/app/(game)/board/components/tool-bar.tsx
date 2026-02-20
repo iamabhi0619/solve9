@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native'
 import { FontAwesome5, Fontisto } from '@expo/vector-icons'
 import { Text } from '@/components/ui/text'
 import { useMenuStore } from '@/store/menu'
-import { useTheme } from '@/theme'
+import { useThemeColors } from '@/utils/useThemeColors'
 
 type Props = {
     onErase: () => void;
@@ -12,15 +12,10 @@ type Props = {
 
 function Toolbar({ onErase, selected }: Props) {
     const { undo, togglePencilMode, getHint, isPencilMode, history, canAutoComplete, autoComplete, hintsRemaining } = useMenuStore();
-    const { resolvedMode } = useTheme();
+    const colors = useThemeColors();
     const [isAutoCompleting, setIsAutoCompleting] = React.useState(false);
 
     const hintsLeft = hintsRemaining();
-
-    const primaryColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
-    const secondaryColor = resolvedMode === "light" ? "#1C4D8D" : "#5B8CFF";
-    const disabledColor = resolvedMode === "light" ? "#94A3B8" : "#AAB2C5";
-    const successColor = "#10B981";
 
     const canAutoCompleteNow = canAutoComplete();
 
@@ -53,7 +48,7 @@ function Toolbar({ onErase, selected }: Props) {
                     <FontAwesome5
                         name="undo-alt"
                         size={24}
-                        color={history.length === 0 ? disabledColor : primaryColor}
+                        color={history.length === 0 ? colors.muted : colors.foreground}
                     />
                     <Text className={`text-sm font-medium ${history.length === 0 ? 'text-muted' : 'text-foreground'}`}>
                         Undo
@@ -64,7 +59,7 @@ function Toolbar({ onErase, selected }: Props) {
                     className='flex-col items-center active:opacity-50'
                     onPress={onErase}
                 >
-                    <FontAwesome5 name="eraser" size={24} color={primaryColor} />
+                    <FontAwesome5 name="eraser" size={24} color={colors.foreground} />
                     <Text className="text-sm font-medium text-foreground">Erase</Text>
                 </Pressable>
 
@@ -75,7 +70,7 @@ function Toolbar({ onErase, selected }: Props) {
                     <FontAwesome5
                         name="pencil-alt"
                         size={24}
-                        color={isPencilMode ? secondaryColor : primaryColor}
+                        color={isPencilMode ? colors.primary : colors.foreground}
                     />
                     <Text className={`text-sm font-medium ${isPencilMode ? 'text-foreground' : 'text-foreground'}`}>
                         Pencil
@@ -88,13 +83,13 @@ function Toolbar({ onErase, selected }: Props) {
                     disabled={hintsLeft === 0}
                 >
                     <View style={{ position: 'relative' }}>
-                        <Fontisto name="lightbulb" size={24} color={hintsLeft === 0 ? disabledColor : primaryColor} />
+                        <Fontisto name="lightbulb" size={24} color={hintsLeft === 0 ? colors.muted : colors.foreground} />
                         <View
                             style={{
                                 position: 'absolute',
                                 top: -4,
                                 right: -8,
-                                backgroundColor: hintsLeft === 0 ? disabledColor : secondaryColor,
+                                backgroundColor: hintsLeft === 0 ? colors.muted : colors.primary,
                                 borderRadius: 8,
                                 minWidth: 16,
                                 height: 16,

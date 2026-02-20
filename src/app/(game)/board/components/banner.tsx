@@ -3,6 +3,7 @@ import { Image, View, Pressable } from "react-native"
 import { router } from "expo-router"
 import { useMenuStore } from "@/store/menu"
 import { useTheme } from "@/theme"
+import { useThemeColors } from "@/utils/useThemeColors"
 import { FontAwesome5 } from "@expo/vector-icons"
 
 type Props = {}
@@ -10,8 +11,7 @@ type Props = {}
 function Banner({ }: Props) {
     const { saveUnsolvedGame, isGameOver, isGameWon } = useMenuStore();
     const { resolvedMode } = useTheme();
-
-    const iconColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
+    const colors = useThemeColors();
 
     const handleBack = async () => {
         // Only save if game is not over or won
@@ -28,15 +28,15 @@ function Banner({ }: Props) {
                     <FontAwesome5
                         name="arrow-left"
                         size={24}
-                        color={iconColor}
+                        color={colors.foreground}
                     />
                 </Pressable>
                 <View className="flex-row items-center">
                     <Image
                         source={
                             resolvedMode === "light"
-                                ? require('../../../assets/icon.png')
-                                : require('../../../assets/icon-dark.png')
+                                ? require('../../../../assets/icon.png')
+                                : require('../../../../assets/icon-dark.png')
                         }
                         style={{ width: 50, height: 50 }}
                     />

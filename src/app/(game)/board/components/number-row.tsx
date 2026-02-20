@@ -75,7 +75,7 @@ const NumberButton = ({
                     className={[
                         "text-[26px] font-extrabold tracking-[0.5px] leading-7.5",
                         disabled
-                            ? "text-muted line-through"
+                            ? "text-muted"
                             : "text-white",
                     ].join(" ")}
                 >

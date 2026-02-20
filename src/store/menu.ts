@@ -24,6 +24,9 @@ type GameHistory = {
   mistakes: number;
   completedAt: Date;
   isWin: boolean;
+  initialGrid: Board;
+  solutionGrid: Board;
+  moveHistory: Move[];
 };
 
 type UnsolvedGame = {
@@ -67,6 +70,7 @@ type GameStore = {
   isGameOver: boolean;
   isGameWon: boolean;
   isPencilMode: boolean;
+  isGeneratingNewGame: boolean;
   currentGameId: string | null;
   gameHistory: GameHistory[];
   unsolvedGames: UnsolvedGame[];
@@ -83,6 +87,7 @@ type GameStore = {
   saveGameToHistory: (isWin: boolean) => void;
   saveUnsolvedGame: () => void;
   loadUnsolvedGame: (gameId: string) => void;
+  restoreActiveGame: () => Promise<boolean>;
   deleteUnsolvedGame: (gameId: string) => void;
   loadHistoryAndUnsolved: () => Promise<void>;
   clearHistory: () => void;
@@ -106,6 +111,7 @@ export const useMenuStore = create<GameStore>((set, get) => ({
   isGameOver: false,
   isGameWon: false,
   isPencilMode: false,
+  isGeneratingNewGame: false,
   hintsUsed: 0,
   currentGameId: null,
   gameHistory: [],
@@ -138,6 +144,7 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       hintsUsed: 0,
       oldGame: null,
       currentGameId: null,
+      isGeneratingNewGame: true,
     });
 
     router.push("/board");
@@ -155,6 +162,7 @@ export const useMenuStore = create<GameStore>((set, get) => ({
         fixed: puzzleBoard.map((row) => [...row]),
         notes,
         currentGameId: gameId,
+        isGeneratingNewGame: false,
       });
     }, 50);
   },
@@ -316,8 +324,8 @@ export const useMenuStore = create<GameStore>((set, get) => ({
   },
 
   saveGameToHistory: async (isWin: boolean) => {
-    const { currentGameId, level, timeElapsed, moves, mistakes, gameHistory } = get();
-    if (!currentGameId || !level) return;
+    const { currentGameId, level, timeElapsed, moves, mistakes, gameHistory, fixed, solution, history } = get();
+    if (!currentGameId || !level || !fixed || !solution) return;
 
     const historyEntry: GameHistory = {
       id: currentGameId,
@@ -327,6 +335,9 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       mistakes,
       completedAt: new Date(),
       isWin,
+      initialGrid: fixed.map(row => [...row]),
+      solutionGrid: solution.map(row => [...row]),
+      moveHistory: [...history],
     };
 
     const newHistory = [historyEntry, ...gameHistory].slice(0, 50); // Keep last 50 games
@@ -380,7 +391,18 @@ export const useMenuStore = create<GameStore>((set, get) => ({
     // Remove existing entry if present and add new one
     const filteredGames = unsolvedGames.filter((g) => g.id !== currentGameId);
     const newUnsolved = [unsolvedGame, ...filteredGames].slice(0, 10); // Keep last 10 unsolved
-    set({ unsolvedGames: newUnsolved });
+    
+    // Update oldGame to reference the newly saved game
+    const oldGame = {
+      grid: board,
+      solvedGrid: solution,
+      size: 9,
+      level,
+      moves,
+      timeElapsed,
+    };
+    
+    set({ unsolvedGames: newUnsolved, oldGame });
 
     // Save to AsyncStorage
     try {
@@ -418,15 +440,80 @@ export const useMenuStore = create<GameStore>((set, get) => ({
       isPencilMode: false,
       hintsUsed: 0,
       oldGame: null,
+      isGeneratingNewGame: false,
     });
 
     router.push("/board");
   },
 
+  restoreActiveGame: async () => {
+    const { currentGameId, board } = get();
+    
+    // If board already exists, no need to restore
+    if (board) return true;
+
+    // Load unsolved games from storage
+    try {
+      const unsolvedData = await AsyncStorage.getItem("unsolvedGames");
+      if (!unsolvedData) return false;
+
+      const unsolved = JSON.parse(unsolvedData);
+      if (!unsolved || unsolved.length === 0) return false;
+
+      // Reconstruct Sets from loaded data
+      const reconstructed = unsolved.map((game: any) => ({
+        ...game,
+        notes: game.notes.map((row: any[]) =>
+          row.map((cell: any[]) => new Set(Array.isArray(cell) ? cell : [])),
+        ),
+      }));
+
+      // Find the game to restore (current game if exists, otherwise most recent)
+      let gameToRestore = currentGameId 
+        ? reconstructed.find((g: UnsolvedGame) => g.id === currentGameId)
+        : reconstructed[0]; // Most recent is first in the array
+
+      if (!gameToRestore) return false;
+
+      // Restore the game state
+      set({
+        board: gameToRestore.grid,
+        solution: gameToRestore.solvedGrid,
+        fixed: gameToRestore.fixed,
+        notes: gameToRestore.notes,
+        level: gameToRestore.level,
+        moves: gameToRestore.moves,
+        mistakes: gameToRestore.mistakes,
+        timeElapsed: gameToRestore.timeElapsed,
+        history: gameToRestore.history,
+        currentGameId: gameToRestore.id,
+        unsolvedGames: reconstructed,
+        isGeneratingNewGame: false,
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Failed to restore active game:", error);
+      return false;
+    }
+  },
+
   deleteUnsolvedGame: async (gameId: string) => {
     const { unsolvedGames } = get();
     const newUnsolved = unsolvedGames.filter((g) => g.id !== gameId);
-    set({ unsolvedGames: newUnsolved });
+    
+    // Update oldGame to the new most recent game
+    const mostRecentGame = newUnsolved[0];
+    const oldGame = mostRecentGame ? {
+      grid: mostRecentGame.grid,
+      solvedGrid: mostRecentGame.solvedGrid,
+      size: 9,
+      level: mostRecentGame.level,
+      moves: mostRecentGame.moves,
+      timeElapsed: mostRecentGame.timeElapsed,
+    } : null;
+    
+    set({ unsolvedGames: newUnsolved, oldGame });
 
     try {
       await AsyncStorage.setItem("unsolvedGames", JSON.stringify(newUnsolved));
@@ -456,7 +543,19 @@ export const useMenuStore = create<GameStore>((set, get) => ({
             row.map((cell: any[]) => new Set(Array.isArray(cell) ? cell : [])),
           ),
         }));
-        set({ unsolvedGames: reconstructed });
+        
+        // Set oldGame to the most recent unsolved game for the Continue button
+        const mostRecentGame = reconstructed[0];
+        const oldGame = mostRecentGame ? {
+          grid: mostRecentGame.grid,
+          solvedGrid: mostRecentGame.solvedGrid,
+          size: 9,
+          level: mostRecentGame.level,
+          moves: mostRecentGame.moves,
+          timeElapsed: mostRecentGame.timeElapsed,
+        } : null;
+        
+        set({ unsolvedGames: reconstructed, oldGame });
       }
     } catch (error) {
       console.error("Failed to load history and unsolved games:", error);

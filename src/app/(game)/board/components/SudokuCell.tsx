@@ -73,8 +73,8 @@ const SudokuCell = ({
     };
 
     const noteSize = cellSize / 3;
-    const noteFontSize = Math.max(7, noteSize * 0.55);
-    const valueFontSize = cellSize * 0.52;
+    const noteFontSize = Math.max(8, noteSize * 0.75);
+    const valueFontSize = cellSize * 0.72;
 
     return (
         <Animated.View
@@ -106,6 +106,8 @@ const SudokuCell = ({
                             opacity: fadeAnim,
                             alignItems: "center",
                             justifyContent: "center",
+                            width: "100%",
+                            height: "100%",
                         }}
                     >
                         <Text
@@ -118,13 +120,18 @@ const SudokuCell = ({
                                             ? "text-foreground"
                                             : isFixed
                                                 ? "text-foreground"
-                                                : "text-primary"} text-3xl font-semibold`}
+                                                : "text-primary"} font-medium`}
+                            style={{
+                                fontSize: valueFontSize,
+                                lineHeight: valueFontSize * 1.1,
+                                textAlign: "center",
+                            }}
                         >
                             {value}
                         </Text>
                     </Animated.View>
                 ) : notes.size > 0 ? (
-                    <View style={[styles.notesGrid, { width: cellSize - 2, height: cellSize - 2 }]}>
+                    <View style={[styles.notesGrid, { width: cellSize, height: cellSize }]}>
                         {NOTE_NUMS.map((num) => (
                             <View
                                 key={num}
@@ -132,8 +139,12 @@ const SudokuCell = ({
                             >
                                 {notes.has(num) ? (
                                     <Text
-                                        className="text-note text-center"
-                                        style={{ fontSize: noteFontSize, lineHeight: noteFontSize * 1.3 }}
+                                        className="text-note"
+                                        style={{
+                                            fontSize: noteFontSize,
+                                            lineHeight: noteFontSize * 1.2,
+                                            textAlign: "center",
+                                        }}
                                     >
                                         {num}
                                     </Text>

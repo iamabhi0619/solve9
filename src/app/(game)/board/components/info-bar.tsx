@@ -3,14 +3,13 @@ import { FontAwesome6 } from "@expo/vector-icons"
 import { useEffect, memo } from "react"
 import { Text } from "@/components/ui/text"
 import { useMenuStore } from "@/store/menu"
-import { useTheme } from "@/theme"
+import { useThemeColors } from "@/utils/useThemeColors"
 import { formateElapsedTime } from "@/utils/formate-time"
 
 // Isolated component — only this re-renders every second
 const TimeSection = memo(() => {
     const { timeElapsed, isPaused, togglePause, incrementTime, saveUnsolvedGame, isGameOver, isGameWon } = useMenuStore();
-    const { resolvedMode } = useTheme();
-    const primaryColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
+    const colors = useThemeColors();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -33,9 +32,9 @@ const TimeSection = memo(() => {
             </View>
             <Pressable className="active:opacity-60" onPress={togglePause}>
                 {isPaused ? (
-                    <FontAwesome6 name="play-circle" size={28} color={primaryColor} />
+                    <FontAwesome6 name="play-circle" size={28} color={colors.foreground} />
                 ) : (
-                    <FontAwesome6 name="pause-circle" size={28} color={primaryColor} />
+                    <FontAwesome6 name="pause-circle" size={28} color={colors.foreground} />
                 )}
             </Pressable>
         </View>

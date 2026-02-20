@@ -1,26 +1,42 @@
 import "../global.css";
 import { Slot } from "expo-router";
 import { useFonts } from "expo-font";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { View, useColorScheme } from "react-native";
 import { Uniwind } from "uniwind";
 import { loadSavedTheme, loadModeChoice } from "@/components/theme-selector";
 
+type ThemeModeChoice = "light" | "dark" | "system";
+
 function AppShell() {
   const systemScheme = useColorScheme();
+  const [modeChoice, setModeChoice] = useState<ThemeModeChoice | null>(null);
+  const [accent, setAccent] = useState<string>("default");
 
+  // Initialize theme on mount
   useEffect(() => {
     (async () => {
       const [savedMode, savedTheme] = await Promise.all([loadModeChoice(), loadSavedTheme()]);
-      const accent = savedTheme ? savedTheme.split("-").slice(1).join("-") : "default";
+      const savedAccent = savedTheme ? savedTheme.split("-").slice(1).join("-") : "default";
+      const restoredMode: ThemeModeChoice = savedMode ?? "system";
       const resolvedMode =
-        savedMode === "system" || savedMode === null
+        restoredMode === "system"
           ? (systemScheme === "dark" ? "dark" : "light")
-          : savedMode;
-      Uniwind.setTheme(`${resolvedMode}-${accent}` as Parameters<typeof Uniwind.setTheme>[0]);
+          : restoredMode;
+      Uniwind.setTheme(`${resolvedMode}-${savedAccent}` as Parameters<typeof Uniwind.setTheme>[0]);
+      setModeChoice(restoredMode);
+      setAccent(savedAccent);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Listen to system theme changes when mode is set to "system"
+  useEffect(() => {
+    if (modeChoice === "system") {
+      const resolvedMode = systemScheme === "dark" ? "dark" : "light";
+      Uniwind.setTheme(`${resolvedMode}-${accent}` as Parameters<typeof Uniwind.setTheme>[0]);
+    }
+  }, [systemScheme, modeChoice, accent]);
 
   const [fontsLoaded] = useFonts({
     "Rubik": require("../../assets/fonts/Rubik-Regular.ttf"),

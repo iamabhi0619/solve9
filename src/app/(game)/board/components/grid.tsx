@@ -101,7 +101,6 @@ const Grid = () => {
                 style={{
                     width: actualGridSize + 4,
                     height: actualGridSize + 4,
-                    shadowColor: "#1C4D8D",
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.18,
                     shadowRadius: 10,

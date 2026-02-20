@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { View, Animated, Easing } from "react-native";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/theme";
+import { useThemeColors } from "@/utils/useThemeColors";
 
 export default function BoardLoader() {
-    const { resolvedMode } = useTheme();
+    const colors = useThemeColors();
 
     const spin = useRef(new Animated.Value(0)).current;
     useEffect(() => {
@@ -42,10 +42,8 @@ export default function BoardLoader() {
         ).start();
     }, []);
 
-    const spinnerBorder =
-        resolvedMode === "dark" ? "#5B8CFF" : "#1C4D8D";
-    const spinnerTrack =
-        resolvedMode === "dark" ? "#2A3142" : "#D9E1F0";
+    const spinnerBorder = colors.primary;
+    const spinnerTrack = colors.border;
 
     return (
         <View className="flex-1 items-center justify-center bg-background">

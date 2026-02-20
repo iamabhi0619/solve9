@@ -3,7 +3,7 @@ import PlayButtons from "@/components/playbuttons";
 import UnsolvedGames from "@/components/unsolved-games";
 import { Text } from "@/components/ui/text";
 import { useMenuStore } from "@/store/menu";
-import { useTheme } from "@/theme";
+import { useThemeColors } from "@/utils/useThemeColors";
 import { Image, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -12,9 +12,7 @@ import { useEffect } from "react";
 
 export default function IndexScreen() {
   const { loadHistoryAndUnsolved } = useMenuStore();
-  const { resolvedMode } = useTheme();
-
-  const iconColor = resolvedMode === "light" ? "#0F2854" : "#E6EAF2";
+  const colors = useThemeColors();
 
   useEffect(() => {
     loadHistoryAndUnsolved();
@@ -25,26 +23,26 @@ export default function IndexScreen() {
       style={{ flex: 1 }}
       className="font-sans"
     >
-      <View className="flex-1 items-center justify-center px-6 w-full">
+      <View className="flex-1 items-center justify-center px-4 w-full">
         <View className="absolute top-4 right-6 flex-row gap-3">
           <Pressable
             onPress={() => router.push("/settings")}
             className="p-3 bg-surface rounded-full border border-border"
             accessibilityLabel="Settings"
           >
-            <Ionicons name="settings-outline" size={22} color={iconColor} />
+            <Ionicons name="settings-outline" size={22} color={colors.foreground} />
           </Pressable>
           <Pressable
             onPress={() => router.push("/history")}
             className="p-3 bg-surface rounded-full border border-border"
             accessibilityLabel="History"
           >
-            <FontAwesome5 name="history" size={22} color={iconColor} />
+            <FontAwesome5 name="history" size={22} color={colors.foreground} />
           </Pressable>
         </View>
 
         <View className="flex-col items-center w-full mb-8">
-          <View className="mb-6">
+          <View className="">
             <Image
               source={require("../../assets/icon.png")}
               style={{ width: 180, height: 180 }}
