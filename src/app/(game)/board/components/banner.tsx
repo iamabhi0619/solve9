@@ -40,7 +40,7 @@ function Banner({ }: Props) {
                         }
                         style={{ width: 50, height: 50 }}
                     />
-                    <Text className="text-4xl ml-2 font-bold text-foreground">Solve9</Text>
+                    <Text className="text-4xl ml-2 font-medium text-foreground">Solve9</Text>
                 </View>
                 <View style={{ width: 40 }} />
             </View>

@@ -26,7 +26,7 @@ type GameHistory = {
   isWin: boolean;
   initialGrid: Board;
   solutionGrid: Board;
-  moveHistory: Move[];
+  moveHistory?: Move[]; // Optional for backward compatibility
 };
 
 type UnsolvedGame = {

@@ -20,7 +20,7 @@ type GameHistory = {
     isWin: boolean;
     initialGrid: (number | null)[][];
     solutionGrid: (number | null)[][];
-    moveHistory: any[];
+    moveHistory?: any[]; // Optional for backward compatibility
 };
 
 export default function HistoryScreen() {
@@ -80,7 +80,7 @@ export default function HistoryScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1 }} className="bg-background">
-            <View className="flex-1 px-3">
+            <View className="flex-1 px-3 relative">
                 {/* Header */}
                 <View className="flex-row items-center justify-between py-4">
                     <Pressable onPress={handleBack} className="p-2">

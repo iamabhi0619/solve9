@@ -120,7 +120,7 @@ const SudokuCell = ({
                                             ? "text-foreground"
                                             : isFixed
                                                 ? "text-foreground"
-                                                : "text-primary"} font-medium`}
+                                                : "text-primary"}`}
                             style={{
                                 fontSize: valueFontSize,
                                 lineHeight: valueFontSize * 1.1,

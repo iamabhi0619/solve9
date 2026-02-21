@@ -12,7 +12,7 @@ type GameHistory = {
   isWin: boolean;
   initialGrid: (number | null)[][];
   solutionGrid: (number | null)[][];
-  moveHistory: any[];
+  moveHistory?: any[]; // Optional for backward compatibility
 };
 
 type StatsOverviewProps = {

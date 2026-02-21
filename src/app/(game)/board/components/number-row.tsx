@@ -73,7 +73,7 @@ const NumberButton = ({
                 {/* Number */}
                 <Text
                     className={[
-                        "text-[26px] font-extrabold tracking-[0.5px] leading-7.5",
+                        "text-[26px] font-semibold tracking-[0.5px] leading-7.5",
                         disabled
                             ? "text-muted"
                             : "text-white",

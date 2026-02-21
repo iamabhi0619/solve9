@@ -15,6 +15,7 @@
     "clsx": "^2.1.1",
     "expo": "^54.0.30",
     "expo-constants": "~18.0.12",
+    "expo-dev-client": "~6.0.20",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.21",
     "expo-status-bar": "~3.0.9",

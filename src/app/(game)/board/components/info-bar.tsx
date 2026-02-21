@@ -25,8 +25,8 @@ const TimeSection = memo(() => {
     return (
         <View className="flex-1 flex-row items-center justify-end">
             <View className="mr-2 gap-0">
-                <Text className="text-foreground text-lg font-medium leading-tight">Time</Text>
-                <Text className="text-foreground text-xl font-bold leading-tight">
+                <Text className="text-foreground text-lg leading-tight">Time</Text>
+                <Text className="text-foreground text-xl font-medium leading-tight">
                     {formateElapsedTime(timeElapsed)}
                 </Text>
             </View>
@@ -49,12 +49,12 @@ const InfoBar = (props: Props) => {
     return (
         <View className="w-full flex-row justify-between">
             <View className="flex-1 gap-0">
-                <Text className="text-foreground text-lg font-medium leading-tight">Difficulty</Text>
-                <Text className="text-foreground text-xl font-bold leading-tight capitalize">{level || 'Medium'}</Text>
+                <Text className="text-foreground text-lg leading-tight">Difficulty</Text>
+                <Text className="text-foreground text-xl font-medium leading-tight capitalize">{level || 'Medium'}</Text>
             </View>
             <View className="flex-1 gap-0 flex-col items-center">
-                <Text className="text-foreground text-lg font-medium leading-tight">Mistake</Text>
-                <Text className="text-foreground text-xl font-bold leading-tight">{mistakes}/3</Text>
+                <Text className="text-foreground text-lg leading-tight">Mistake</Text>
+                <Text className="text-foreground text-xl font-medium leading-tight">{mistakes}/3</Text>
             </View>
             <TimeSection />
         </View>
