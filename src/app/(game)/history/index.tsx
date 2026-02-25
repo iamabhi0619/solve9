@@ -1,4 +1,4 @@
-import { View, FlatList, Pressable } from "react-native";
+import { View, FlatList, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { useMenuStore } from "@/store/menu";
@@ -40,7 +40,26 @@ export default function HistoryScreen() {
         router.back();
     };
 
+    const canReplayGame = (game: GameHistory): boolean => {
+        // Check if game has all required data for replay
+        return !!
+            game.initialGrid &&
+            Array.isArray(game.initialGrid) &&
+            game.initialGrid.length > 0 &&
+            game.solutionGrid &&
+            Array.isArray(game.solutionGrid) &&
+            game.solutionGrid.length > 0;
+    };
+
     const handleGamePress = (game: GameHistory) => {
+        if (!canReplayGame(game)) {
+            Alert.alert(
+                "Cannot Replay Game",
+                "This game was saved in an older version of the app and doesn't have all the required data for replay. Only the game statistics are available.",
+                [{ text: "OK" }]
+            );
+            return;
+        }
         setSelectedGame(game);
         setShowReplayModal(true);
     };
