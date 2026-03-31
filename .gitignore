@@ -13,9 +13,16 @@ dist/
 web-build/
 expo-env.d.ts
 
-android/
+# android/
 ios/
 web/
+
+
+android/.gradle/
+android/build/
+android/app/build/
+android/.kotlin/
+android/app/.cxx/
 
 # Native
 *.orig.*

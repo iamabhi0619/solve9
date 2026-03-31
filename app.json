@@ -28,7 +28,7 @@
       "package": "com.iamabhi0619.solve9"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {

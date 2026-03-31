@@ -1,6 +1,7 @@
-import { Pressable, Animated, View, StyleSheet, Platform } from "react-native";
+import { Pressable, Animated, View, StyleSheet } from "react-native";
 import { useRef, useEffect } from "react";
 import { Text } from "@/components/ui/text";
+import { cn } from "@/utils/cn";
 
 type Props = {
     value: number | null;
@@ -86,18 +87,14 @@ const SudokuCell = ({
         >
             <Pressable
                 onPress={handlePress}
-                className={[
-                    isError
-                        ? "bg-error-bg"
-                        : isSelected
-                            ? "bg-cell-selected"
-                            : isSameNumber
-                                ? "bg-cell-same"
-                                : isRelated
-                                    ? "bg-cell-related"
-                                    : "bg-transparent",
-                ].join(" ")}
-                style={[styles.cell, { width: cellSize, height: cellSize }]}
+                className={cn(
+                    "bg-transparent focus:ring-0 outline-none",
+                    isError && "bg-error-bg",
+                    !isError && isSelected && "bg-cell-selected",
+                    !isError && !isSelected && isSameNumber && "bg-cell-same",
+                    !isError && !isSelected && !isSameNumber && isRelated && "bg-cell-related"
+                )}
+                style={[styles.cell, { width: cellSize, height: cellSize,outlineWidth: 0 }]}
             >
                 {value ? (
                     <Animated.View

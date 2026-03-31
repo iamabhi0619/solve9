@@ -23,11 +23,11 @@ export default function IndexScreen() {
       style={{ flex: 1 }}
       className="font-sans"
     >
-      <View className="flex-1 items-center justify-center px-4 w-full">
-        <View className="absolute top-4 right-6 flex-row gap-3">
+      <View className="flex-1 items-center px-4 w-full">
+        <View className="absolute top-4 right-6 flex-row gap-3 z-10">
           <Pressable
-            onPress={() => router.push("/settings")}
-            className="p-3 bg-surface rounded-full border border-border"
+            onPress={() => router.navigate("/settings")}
+            className="p-3 bg-surface rounded-full border border-border h-full"
             accessibilityLabel="Settings"
           >
             <Ionicons name="settings-outline" size={22} color={colors.foreground} />

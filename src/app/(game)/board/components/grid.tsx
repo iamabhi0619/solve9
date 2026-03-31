@@ -1,5 +1,5 @@
-import { View, useWindowDimensions } from "react-native";
-import { useState, useMemo, useCallback } from "react";
+import { View, useWindowDimensions, Platform } from "react-native";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import SudokuCell from "./SudokuCell";
 import NumberRow from "./number-row";
 import Toolbar from "./tool-bar";
@@ -56,6 +56,49 @@ const Grid = () => {
     const handleErase = useCallback(() => {
         if (selected && !isPaused) handleInput(selected.row, selected.col, null);
     }, [selected, handleInput, isPaused]);
+
+    // Web-only keyboard support for the selected cell.
+    useEffect(() => {
+        if (Platform.OS !== "web") return;
+
+        const onKeyDown = (event: any) => {
+            if (!selected || isPaused) return;
+
+            const activeElement = (globalThis as any).document?.activeElement;
+            const tagName = activeElement?.tagName?.toLowerCase?.();
+            if (tagName === "input" || tagName === "textarea" || activeElement?.isContentEditable) {
+                return;
+            }
+
+            const key = event?.key;
+
+            if (key >= "1" && key <= "9") {
+                handleInput(selected.row, selected.col, Number(key));
+                event.preventDefault?.();
+                return;
+            }
+
+            if (key === "Backspace" || key === "Delete" || key === "0") {
+                handleInput(selected.row, selected.col, null);
+                event.preventDefault?.();
+                return;
+            }
+
+            if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
+                const deltaRow = key === "ArrowUp" ? -1 : key === "ArrowDown" ? 1 : 0;
+                const deltaCol = key === "ArrowLeft" ? -1 : key === "ArrowRight" ? 1 : 0;
+                const nextRow = Math.max(0, Math.min(8, selected.row + deltaRow));
+                const nextCol = Math.max(0, Math.min(8, selected.col + deltaCol));
+                setSelected({ row: nextRow, col: nextCol });
+                event.preventDefault?.();
+            }
+        };
+
+        (globalThis as any).window?.addEventListener?.("keydown", onKeyDown);
+        return () => {
+            (globalThis as any).window?.removeEventListener?.("keydown", onKeyDown);
+        };
+    }, [selected, isPaused, handleInput]);
 
     /* -------------------- HELPERS -------------------- */
     const isSameBox = (r: number, c: number) => {

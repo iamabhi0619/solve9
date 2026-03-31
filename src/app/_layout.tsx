@@ -50,7 +50,7 @@ function AppShell() {
   }
 
   return (
-    <View style={{ flex: 1 }} className="bg-background font-sans">
+    <View style={{ flex: 1 }} className="bg-background font-sans sm:px-10 md:px-36">
       <Slot />
     </View>
   );
